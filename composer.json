@@ -52,7 +52,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Misaf\\VendraUser\\UserServiceProvider"
+                "Misaf\\VendraUser\\Providers\\UserServiceProvider"
             ]
         }
     },
