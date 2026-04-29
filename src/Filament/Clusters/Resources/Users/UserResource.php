@@ -170,7 +170,7 @@ final class UserResource extends Resource
         return [
             // UserProfileRelationManager::class,
             // AffiliateRelationManager::class,
-            // RelationGroup::make(__('transaction::navigation.transaction'), [
+            // RelationGroup::make(__('vendra-transaction::navigation.transaction'), [
             //     TransactionRelationManager::class,
             //     TransactionLimitRelationManager::class,
             // ]),
@@ -390,7 +390,7 @@ final class UserResource extends Resource
                                 ->autocomplete(false)
                                 ->columnSpanFull()
                                 ->extraInputAttributes(['dir' => 'ltr'])
-                                ->label(__('transaction::attributes.amount'))
+                                ->label(__('vendra-transaction::attributes.amount'))
                                 ->minValue(1)
                                 ->numeric()
                                 ->required(),
