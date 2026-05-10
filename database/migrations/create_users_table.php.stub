@@ -13,6 +13,7 @@ return new class () extends Migration {
         $this->createUsersTable();
         $this->createSocialiteUsersTable();
         $this->createPasswordResetTokensTable();
+        $this->createSessionsTable();
         Schema::enableForeignKeyConstraints();
     }
 
@@ -22,6 +23,7 @@ return new class () extends Migration {
         Schema::dropIfExists('users');
         Schema::dropIfExists('socialite_users');
         Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
         Schema::enableForeignKeyConstraints();
     }
 
@@ -73,6 +75,24 @@ return new class () extends Migration {
             $table->string('token');
             $table->timestampTz('created_at')
                 ->nullable();
+        });
+    }
+
+    private function createSessionsTable(): void
+    {
+        Schema::create('sessions', function (Blueprint $table): void {
+            $table->string('id')
+                ->primary();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->index();
+            $table->string('ip_address', 45)
+                ->nullable();
+            $table->text('user_agent')
+                ->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')
+                ->index();
         });
     }
 };
