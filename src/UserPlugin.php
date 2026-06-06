@@ -9,9 +9,11 @@ use Filament\Panel;
 
 final class UserPlugin implements Plugin
 {
+    public const string ID = 'vendra-user';
+
     public function getId(): string
     {
-        return 'vendra-user';
+        return self::ID;
     }
 
     public static function make(): static
