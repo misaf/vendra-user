@@ -10,6 +10,8 @@ use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,10 +25,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\LaravelAuthifyLog\Contracts\HasUsername;
+use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
+use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraTenant\Traits\BelongsToTenant;
 use Misaf\VendraUser\Database\Factories\UserFactory;
-use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -46,6 +49,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
+#[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
+#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token'])]
 final class User extends Authenticatable implements
     FilamentUser,
     HasLocalePreference,
@@ -56,43 +61,36 @@ final class User extends Authenticatable implements
     // HasUsername
 {
     use BelongsToTenant;
+    use HasDefaultActivityLogOptions;
+
+    use HasDefaultMediaConversions, InteractsWithMedia {
+        HasDefaultMediaConversions::registerMediaConversions insteadof InteractsWithMedia;
+    }
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
-
     use HasFeatures;
     use HasRoles;
-    use InteractsWithMedia;
     use LogsActivity;
     use Notifiable;
     use SoftDeletes;
 
-    protected $casts = [
-        'id'                   => 'integer',
-        'tenant_id'            => 'integer',
-        'username'             => 'string',
-        'email'                => 'string',
-        'email_verified_at'    => 'datetime',
-        'password'             => 'string',
-        'password_fingerprint' => 'string',
-        'remember_token'       => 'string',
-    ];
-
-    protected $fillable = [
-        'tenant_id',
-        'username',
-        'email',
-        'email_verified_at',
-        'password',
-        'password_fingerprint',
-    ];
-
-    protected $hidden = [
-        'tenant_id',
-        'password',
-        'password_fingerprint',
-        'remember_token',
-    ];
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'id'                   => 'integer',
+            'tenant_id'            => 'integer',
+            'username'             => 'string',
+            'email'                => 'string',
+            'email_verified_at'    => 'datetime',
+            'password'             => 'string',
+            'password_fingerprint' => 'string',
+            'remember_token'       => 'string',
+        ];
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -159,31 +157,4 @@ final class User extends Authenticatable implements
         return $this->media();
     }
 
-    public function registerMediaConversions(?Media $media = null): void
-    {
-        $this->addMediaConversion('thumb-table')
-            ->width(48)
-            ->format('webp');
-
-        $this->addMediaConversion('small')
-            ->width(300)
-            ->format('webp');
-
-        $this->addMediaConversion('medium')
-            ->width(500)
-            ->format('webp');
-
-        $this->addMediaConversion('large')
-            ->width(800)
-            ->format('webp');
-
-        $this->addMediaConversion('extra-large')
-            ->width(1200)
-            ->format('webp');
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable()->logExcept(['id']);
-    }
 }
