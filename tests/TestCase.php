@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraUser\Tests;
 
 use Illuminate\Support\Facades\Http;
-use Misaf\VendraUser\UserServiceProvider;
+use Misaf\VendraUser\Providers\UserServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Override;
 
