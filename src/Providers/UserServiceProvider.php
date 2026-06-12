@@ -9,6 +9,9 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Misaf\VendraUser\Console\Commands\AssignSuperAdminRoleCommand;
+use Misaf\VendraUser\Console\Commands\CreateUserCommand;
+use Misaf\VendraUser\Console\Commands\SeedCommand;
 use Misaf\VendraUser\Models\User;
 use Misaf\VendraUser\Services\UserService;
 use Misaf\VendraUser\UserPlugin;
@@ -27,6 +30,11 @@ final class UserServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_users_table',
             ])
+            ->hasCommands(
+                AssignSuperAdminRoleCommand::class,
+                CreateUserCommand::class,
+                SeedCommand::class,
+            )
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-user');
             });
