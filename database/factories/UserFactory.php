@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -14,10 +15,9 @@ use Misaf\VendraUser\Models\User;
 /**
  * @extends Factory<User>
  */
+#[UseModel(User::class)]
 final class UserFactory extends Factory
 {
-    protected $model = User::class;
-
     public function definition(): array
     {
         return [
