@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Concerns\HasFeatures;
-use Misaf\LaravelAuthifyLog\Contracts\HasUsername;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
 use Misaf\VendraTenant\Models\Tenant;
@@ -51,6 +51,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 #[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
 #[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token'])]
+#[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements
     FilamentUser,
     HasLocalePreference,
@@ -58,7 +59,6 @@ final class User extends Authenticatable implements
     MustVerifyEmail,
     HasTenants,
     HasMedia
-    // HasUsername
 {
     use BelongsToTenant;
     use HasDefaultActivityLogOptions;
