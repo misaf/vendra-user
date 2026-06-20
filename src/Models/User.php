@@ -113,7 +113,7 @@ final class User extends Authenticatable implements
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class);
+        return $this->belongsToMany(Tenant::class)->withTimestamps();
     }
 
     public function getTenants(Panel $panel): Collection
@@ -131,7 +131,7 @@ final class User extends Authenticatable implements
      */
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class);
+        return $this->belongsToMany(Tenant::class)->withTimestamps();
     }
 
     /**
