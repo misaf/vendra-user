@@ -1,0 +1,18 @@
+[
+    {
+        "username": "admin_misaf-shops",
+        "email": "admin@misaf-shops.test",
+        "email_verified": true,
+        "role": "super-admin"
+    },
+    {
+        "username": "user_misaf-shops",
+        "email": "user@misaf-shops.test",
+        "email_verified": true
+    },
+    {
+        "username": "unverified_misaf-shops",
+        "email": "unverified@misaf-shops.test",
+        "email_verified": false
+    }
+]
