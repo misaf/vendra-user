@@ -26,8 +26,6 @@ final class CreateUserAction
             'password'          => Hash::make($password),
         ]);
 
-        $user->tenants()->syncWithoutDetaching([$tenant->id]);
-
         return $user;
     }
 }
