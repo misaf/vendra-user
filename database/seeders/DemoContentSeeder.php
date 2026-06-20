@@ -4,69 +4,82 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Misaf\VendraSupport\Database\Seeders\TenantDemoContentSeeder;
 use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraUser\Database\Factories\UserFactory;
 use Misaf\VendraUser\Models\User;
-use Misaf\VendraUser\Models\UserProfile;
 use Spatie\Permission\Models\Role;
 
-final class DemoContentSeeder extends Seeder
+final class DemoContentSeeder extends TenantDemoContentSeeder
 {
-    public function run(): void
+    protected function seedFactoryRecords(Tenant $tenant): void
     {
-        $tenant = Tenant::query()->first();
+        $adminUser = UserFactory::new()->forTenant($tenant)->createOne();
 
-        if ( ! $tenant) {
-            $this->command->error('Tenants not found. Please run TenantSeeder first.');
-            return;
-        }
+        $this->assignRole($adminUser, Config::string('vendra-permission.super_admin_role', 'super-admin'));
 
-        $this->createSampleUsers($tenant, 'misaf-shops');
+        UserFactory::new()->forTenant($tenant)->count(2)->create();
+        UserFactory::new()->forTenant($tenant)->unverified()->createOne();
     }
 
-    private function createSampleUsers(Tenant $tenant, string $tenantSlug): void
+    protected function seedFixtureRecord(Tenant $tenant, array $record): void
     {
-        $adminUser = User::factory()->forTenant($tenant)->create([
-            'username' => "admin_{$tenantSlug}",
-            'email'    => "admin@{$tenantSlug}.test",
+        $data = $this->validatedFixtureRecord($record);
+
+        $this->handleSeedFixtureRecord($tenant, $data);
+    }
+
+    /**
+     * @param array{username: string, email: string, email_verified: bool, role?: string} $data
+     */
+    private function handleSeedFixtureRecord(Tenant $tenant, array $data): void
+    {
+        $user = new User([
+            'username'          => $data['username'],
+            'email'             => $data['email'],
+            'email_verified_at' => $data['email_verified'] ? now() : null,
+            'password'          => Hash::make(Str::password(32)),
         ]);
 
-        // Assign super-admin role to admin user
-        $superAdminRole = Role::where('name', 'super-admin')->where('guard_name', 'web')->first();
-        if ($superAdminRole) {
-            $adminUser->assignRole($superAdminRole);
-            $this->command->info("Assigned super-admin role to admin user (ID: {$adminUser->id})");
-        } else {
-            $this->command->warn("Super-admin role not found. Please run PermissionSeeder first.");
+        $user->tenant_id = $tenant->id;
+        $user->save();
+
+        if (isset($data['role'])) {
+            $this->assignRole($user, $data['role']);
         }
+    }
 
-        // Create regular user
-        $regularUser = User::factory()->forTenant($tenant)->create([
-            'username'          => "user_{$tenantSlug}",
-            'email'             => "user@{$tenantSlug}.test",
-            'email_verified_at' => now(),
-        ]);
+    /**
+     * @param array<string, mixed> $record
+     *
+     * @return array{username: string, email: string, email_verified: bool, role?: string}
+     */
+    private function validatedFixtureRecord(array $record): array
+    {
+        /** @var array{username: string, email: string, email_verified: bool, role?: string} $validated */
+        $validated = Validator::make(
+            data: $record,
+            rules: [
+                'username'       => ['required', 'string'],
+                'email'          => ['required', 'email'],
+                'email_verified' => ['required', 'boolean'],
+                'role'           => ['sometimes', 'string'],
+            ],
+        )->validate();
 
-        // $regularProfile = UserProfile::create([
-        //     'tenant_id'   => $tenant->id,
-        //     'user_id'     => $regularUser->id,
-        //     'first_name'  => 'Regular',
-        //     'last_name'   => 'User',
-        //     'description' => "Regular user for {$tenantSlug} tenant",
-        //     'birthdate'   => null,
-        //     'status'      => true,
-        // ]);
+        return $validated;
+    }
 
+    private function assignRole(User $user, string $roleName): void
+    {
+        $role = Role::where('name', $roleName)->where('guard_name', 'web')->first();
 
-        // Create unverified user
-        $unverifiedUser = User::factory()->forTenant($tenant)->unverified()->create([
-            'username' => "unverified_{$tenantSlug}",
-            'email'    => "unverified@{$tenantSlug}.test",
-        ]);
-
-        $this->command->info("Created sample users for {$tenantSlug} tenant:");
-        $this->command->info("- Admin user: admin@{$tenantSlug}.test");
-        $this->command->info("- Regular user: user@{$tenantSlug}.test");
-        $this->command->info("- Unverified user: unverified@{$tenantSlug}.test");
+        if ($role) {
+            $user->assignRole($role);
+        }
     }
 }
