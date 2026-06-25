@@ -6,11 +6,11 @@ namespace Misaf\VendraUser\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
+use Misaf\VendraPermission\Models\Role;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Models\User;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 final class CreateUserCommand extends Command
 {
@@ -20,8 +20,7 @@ final class CreateUserCommand extends Command
         {--email= : Email address for the new user}
         {--password= : Password for the new user}
         {--role= : Role name to assign}
-        {--guard=web : Guard name for the role}
-        {--verified : Mark the user email as verified}';
+        {--guard=web : Guard name for the role}';
 
     protected $description = 'Create a new user and assign a role';
 
@@ -41,14 +40,14 @@ final class CreateUserCommand extends Command
         $username = $this->requiredInput('username', 'Username');
         $email = $this->requiredInput('email', 'Email address');
         $password = $this->requiredInput('password', 'Password', secret: true);
-        $roleName = $this->requiredInput(
+        $role = $this->requiredInput(
             'role',
             'Role name',
             Config::string('vendra-permission.super_admin_role', 'super-admin'),
         );
         $guardName = $this->requiredInput('guard', 'Guard name', 'web');
 
-        if (null === $username || null === $email || null === $password || null === $roleName || null === $guardName) {
+        if (null === $username || null === $email || null === $password || null === $role || null === $guardName) {
             return self::FAILURE;
         }
 
@@ -69,23 +68,24 @@ final class CreateUserCommand extends Command
             return self::FAILURE;
         }
 
-        $role = $this->resolveRole($roleName, $guardName, $tenant);
+        try {
+            /** @var Role $resolvedRole */
+            $resolvedRole = $tenant->execute(static fn() => Role::findByName($role, $guardName));
 
-        if ( ! $role) {
+            $user = $this->createUserAction->execute(
+                tenant: $tenant,
+                username: $username,
+                email: $email,
+                password: $password,
+                role: $resolvedRole,
+            );
+        } catch (RoleDoesNotExist) {
+            $this->error("Role [{$role}] with guard [{$guardName}] not found for tenant [{$tenant->id}].");
+
             return self::FAILURE;
         }
 
-        $user = $this->createUserAction->execute(
-            $tenant,
-            $username,
-            $email,
-            $password,
-            (bool) $this->option('verified'),
-        );
-
-        $user->assignRole($role);
-
-        $this->info("Created user {$user->username} ({$user->email}) and assigned role [{$role->name}].");
+        $this->info("Created user {$user->username} ({$user->email}) and assigned role [{$role}].");
 
         return self::SUCCESS;
     }
@@ -102,27 +102,6 @@ final class CreateUserCommand extends Command
         }
 
         return $tenant;
-    }
-
-    private function resolveRole(string $roleName, string $guardName, Tenant $tenant): ?Role
-    {
-        $roleQuery = Role::query()
-            ->where('name', $roleName)
-            ->where('guard_name', $guardName);
-
-        if (Schema::hasColumn('roles', 'tenant_id')) {
-            $roleQuery->where('tenant_id', $tenant->id);
-        }
-
-        $role = $roleQuery->first();
-
-        if ( ! $role) {
-            $this->error("Role [{$roleName}] with guard [{$guardName}] not found for tenant [{$tenant->id}].");
-
-            return null;
-        }
-
-        return $role;
     }
 
     private function requiredInput(string $option, string $label, ?string $default = null, bool $secret = false): ?string
