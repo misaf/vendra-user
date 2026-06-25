@@ -102,8 +102,8 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
         $validated = Validator::make(
             data: $record,
             rules: [
-                'username'       => ['required', 'string'],
-                'email'          => ['required', 'email'],
+                'username'          => ['required', 'string'],
+                'email'             => ['required', 'email'],
                 'email_verified_at' => ['nullable', 'date'],
                 'role'              => ['sometimes', 'string'],
             ],
