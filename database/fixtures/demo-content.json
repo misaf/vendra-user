@@ -2,17 +2,17 @@
     {
         "username": "admin_misaf-shops",
         "email": "admin@misaf-shops.test",
-        "email_verified": true,
-        "role": "super-admin"
+        "email_verified_at": "2025-05-05 12:20:20",
+        "role": "user"
     },
     {
         "username": "user_misaf-shops",
         "email": "user@misaf-shops.test",
-        "email_verified": true
+        "email_verified_at": "2025-05-05 12:20:20"
     },
     {
         "username": "unverified_misaf-shops",
         "email": "unverified@misaf-shops.test",
-        "email_verified": false
+        "email_verified_at": null
     }
 ]

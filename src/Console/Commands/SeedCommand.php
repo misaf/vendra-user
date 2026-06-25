@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Console\Commands;
 
-use Misaf\VendraSupport\Console\Commands\BaseSeedCommand;
+use Misaf\VendraTenant\Console\Commands\TenantSeedCommand;
 use Misaf\VendraUser\Database\Seeders\DemoContentSeeder;
 use Misaf\VendraUser\Database\Seeders\PermissionPolicySeeder;
 use Misaf\VendraUser\UserPlugin;
 
-final class SeedCommand extends BaseSeedCommand
+final class SeedCommand extends TenantSeedCommand
 {
     protected const string MODULE_NAME = UserPlugin::ID;
 

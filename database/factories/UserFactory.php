@@ -37,6 +37,13 @@ final class UserFactory extends Factory
         return $this->state(fn(): array => ['tenant_id' => $tenantId]);
     }
 
+    public function withRole(string $role): static
+    {
+        return $this->afterCreating(function (User $user) use ($role): void {
+            $user->assignRole($role);
+        });
+    }
+
     public function unverified(): static
     {
         return $this->state(fn(array $attributes): array => [
