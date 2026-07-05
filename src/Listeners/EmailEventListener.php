@@ -12,7 +12,7 @@ use Closure;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
-use Misaf\VendraTenant\Scopes\TenantScope;
+use Misaf\VendraSupport\Scopes\TenantScope;
 use Misaf\VendraUser\Models\User;
 use Throwable;
 

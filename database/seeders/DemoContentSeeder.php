@@ -6,8 +6,8 @@ namespace Misaf\VendraUser\Database\Seeders;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Misaf\VendraSupport\Concerns\RequiresCurrentTenant;
 use Misaf\VendraSupport\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
-use Misaf\VendraTenant\Concerns\RequiresCurrentTenant;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Database\Factories\UserFactory;

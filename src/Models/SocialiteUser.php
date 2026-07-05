@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraUser\Models;
 
 use DutchCodingCompany\FilamentSocialite\Models\SocialiteUser as DutchCodingCompanySocialiteUser;
-use Misaf\VendraTenant\Traits\BelongsToTenant;
+use Misaf\VendraSupport\Traits\BelongsToTenant;
 
 final class SocialiteUser extends DutchCodingCompanySocialiteUser
 {

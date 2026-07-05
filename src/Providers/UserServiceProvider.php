@@ -9,6 +9,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Misaf\VendraSupport\Support\TenantSeeders;
 use Misaf\VendraUser\Console\Commands\AssignSuperAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
 use Misaf\VendraUser\Console\Commands\SeedCommand;
@@ -55,6 +56,8 @@ final class UserServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
+
         AboutCommand::add('Vendra User', fn() => ['Version' => 'dev-master']);
 
         Gate::after(function (User $user): ?true {
