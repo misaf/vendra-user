@@ -25,12 +25,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Concerns\HasFeatures;
-use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
+use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Database\Factories\UserFactory;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -58,10 +57,10 @@ final class User extends Authenticatable implements
     HasName,
     MustVerifyEmail,
     HasTenants,
-    HasMedia
+    HasMedia,
+    ShouldLogActivity
 {
     use BelongsToTenant;
-    use HasDefaultActivityLogOptions;
 
     use HasDefaultMediaConversions, InteractsWithMedia {
         HasDefaultMediaConversions::registerMediaConversions insteadof InteractsWithMedia;
@@ -71,7 +70,6 @@ final class User extends Authenticatable implements
     use HasFactory;
     use HasFeatures;
     use HasRoles;
-    use LogsActivity;
     use Notifiable;
     use SoftDeletes;
 
