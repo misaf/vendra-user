@@ -20,7 +20,7 @@
 		"filament/filament": "^5.0",
 		"illuminate/support": "^13.0",
 		"laravel/pennant": "^1.19",
-		"misaf/vendra-multimedia": "dev-master",
+		"misaf/vendra-multimedia": "^1.0.0",
 		"misaf/vendra-support": "dev-master",
 		"misaf/filament-jalali": "^5.1",
 		"spatie/laravel-package-tools": "^1.0",

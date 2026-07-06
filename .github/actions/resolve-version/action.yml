@@ -1,0 +1,48 @@
+name: Resolve version
+description: Validates a semver version tag and resolves the previous release tag.
+
+inputs:
+  version:
+    description: Version tag to release, for example v1.0.0
+    required: true
+  previous_tag:
+    description: Previous version tag. Leave empty to auto-detect.
+    required: false
+    default: ''
+
+outputs:
+  previous_tag:
+    description: The resolved previous release tag
+    value: ${{ steps.resolve.outputs.value }}
+
+runs:
+  using: composite
+  steps:
+    - name: Validate version
+      shell: bash
+      run: |
+        if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+          echo "Version must look like v1.0.0 or v1.0.0-beta.1"
+          exit 1
+        fi
+
+        if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          echo "Tag $VERSION already exists"
+          exit 1
+        fi
+      env:
+        VERSION: ${{ inputs.version }}
+
+    - name: Resolve previous tag
+      id: resolve
+      shell: bash
+      run: |
+        if [[ -n "$PREVIOUS_TAG" ]]; then
+          echo "value=$PREVIOUS_TAG" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        previous_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+        echo "value=$previous_tag" >> "$GITHUB_OUTPUT"
+      env:
+        PREVIOUS_TAG: ${{ inputs.previous_tag }}
