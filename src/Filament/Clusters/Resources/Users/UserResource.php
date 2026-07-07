@@ -51,7 +51,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 use Misaf\VendraAffiliate\Filament\Clusters\Resources\Affiliates\RelationManagers\AffiliateRelationManager;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Support\TenantAwareness;
 use Misaf\VendraTransaction\Enums\TransactionStatusEnum;
 use Misaf\VendraTransaction\Enums\TransactionTypeEnum;
 use Misaf\VendraTransaction\Facades\TransactionService;
@@ -88,12 +88,12 @@ final class UserResource extends Resource
 
     public static function getBreadcrumb(): string
     {
-        return __('navigation.user');
+        return __('vendra-user::navigation.user');
     }
 
     public static function getModelLabel(): string
     {
-        return __('navigation.user');
+        return __('vendra-user::navigation.user');
     }
 
     public static function getNavigationGroup(): string
@@ -103,12 +103,12 @@ final class UserResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.user');
+        return __('vendra-user::navigation.user');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('navigation.user');
+        return __('vendra-user::navigation.user');
     }
 
     public static function getGlobalSearchEloquentQuery(): Builder
@@ -130,12 +130,12 @@ final class UserResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('form.email') => $record->email,
-            __('model.role') => Arr::join(
+            __('vendra-user::attributes.email')      => $record->email,
+            __('vendra-permission::navigation.role') => Arr::join(
                 $record->roles()->pluck('name')->toArray(),
                 ', ',
             ),
-            __('tag::navigation.tag') => new HtmlString(
+            __('vendra-tagger::navigation.tag') => new HtmlString(
                 "<span dir='ltr'>" . collect($record->tags->pluck('name'))
                     ->map(fn($tag) => "#{$tag}")
                     ->implode(' ')
@@ -198,7 +198,7 @@ final class UserResource extends Resource
                     ->disabledOn('edit')
                     ->extraAttributes(['dir' => 'ltr'])
                     ->hint('Letters, dashes, and underscores are allowed')
-                    ->label(__('form.username'))
+                    ->label(__('vendra-user::attributes.username'))
                     ->live(onBlur: true)
                     ->maxLength(12)
                     ->minLength(3)
@@ -211,13 +211,13 @@ final class UserResource extends Resource
                     ->autofocus()
                     ->columnSpan(['lg' => 2])
                     ->email()
-                    ->label(__('form.email'))
+                    ->label(__('vendra-user::attributes.email'))
                     ->live(onBlur: true)
                     ->maxLength(255)
                     ->required()
                     ->rules(['bail', 'email:rfc,strict,spoof,filter,filter_unicode', new EmailValidation(app()->isProduction())])
                     ->unique(
-                        modifyRuleUsing: fn(Unique $rule) => $rule->where('tenant_id', Tenant::current()->id),
+                        modifyRuleUsing: fn(Unique $rule) => TenantAwareness::constrainUniqueRule($rule),
                     )
                     ->extraAttributes(['dir' => 'ltr']),
 
@@ -226,7 +226,7 @@ final class UserResource extends Resource
                     ->displayFormat('Y-m-d H:i')
                     ->firstDayOfWeek(6)
                     ->unless(app()->isLocale('fa'), fn(DateTimePicker $column) => $column->jalali())
-                    ->label(__('form.email_verified_at'))
+                    ->label(__('vendra-user::attributes.email_verified_at'))
                     ->maxDate(now())
                     ->native(false)
                     ->seconds(false),
@@ -237,7 +237,7 @@ final class UserResource extends Resource
                     ->extraAttributes(['dir' => 'ltr'])
                     ->hintAction(
                         Action::make('copyCostToPrice')
-                            ->label(__('Random Password'))
+                            ->label(__('vendra-user::forms.random_password'))
                             ->icon('heroicon-o-shield-check')
                             ->disabled(function (string $operation) {
                                 return 'view' === $operation;
@@ -253,7 +253,7 @@ final class UserResource extends Resource
                                 $set('password', UserService::generatePassword(10));
                             }),
                     )
-                    ->label(__('form.password'))
+                    ->label(__('vendra-user::attributes.password'))
                     ->live(debounce: 500)
                     ->password()
                     ->required(fn(string $operation): bool => 'create' === $operation)
@@ -261,7 +261,7 @@ final class UserResource extends Resource
                     ->rule(Password::default()),
 
                 Select::make('role')
-                    ->label(__('model.role'))
+                    ->label(__('vendra-permission::navigation.role'))
                     ->multiple()
                     ->native(false)
                     ->preload()
@@ -269,7 +269,7 @@ final class UserResource extends Resource
                     ->searchable(),
 
                 Select::make('permission')
-                    ->label(__('model.permission'))
+                    ->label(__('vendra-permission::navigation.permission'))
                     ->multiple()
                     ->native(false)
                     ->preload()
@@ -277,7 +277,7 @@ final class UserResource extends Resource
                     ->searchable(),
 
                 SpatieTagsInput::make('tags')
-                    ->label(__('tag::navigation.tag')),
+                    ->label(__('vendra-tagger::navigation.tag')),
             ]);
     }
 
@@ -298,32 +298,32 @@ final class UserResource extends Resource
                     ->conversion('thumb-table')
                     ->defaultImageUrl(url('coin-payment/images/default.png'))
                     ->extraImgAttributes(['class' => 'saturate-50', 'loading' => 'lazy'])
-                    ->label(__('form.image'))
+                    ->label(__('vendra-user::attributes.image'))
                     ->stacked(),
                 TextColumn::make('username')
-                    ->label(__('form.username'))
+                    ->label(__('vendra-user::attributes.username'))
                     ->searchable(isGlobal: true),
 
                 TextColumn::make('email')
-                    ->label(__('form.email'))
+                    ->label(__('vendra-user::attributes.email'))
                     ->searchable(isGlobal: true),
 
                 TextColumn::make('roles.name')
                     ->badge()
-                    ->label(__('model.role'))
+                    ->label(__('vendra-permission::navigation.role'))
                     ->separator(','),
 
                 // SpatieTagsColumn::make('tags')
-                //     ->label(__('tag::navigation.tag'))
+                //     ->label(__('vendra-tagger::navigation.tag'))
                 //     ->action(AddTagAction::make()),
 
                 TextColumn::make('email_verified_at'),
 
                 TextColumn::make('created_at')
-                    ->label(__('form.created_at')),
+                    ->label(__('vendra-user::attributes.created_at')),
 
                 TextColumn::make('updated_at')
-                    ->label(__('form.updated_at')),
+                    ->label(__('vendra-user::attributes.updated_at')),
 
                 TextColumn::make('deleted_at'),
             ])
@@ -334,15 +334,15 @@ final class UserResource extends Resource
                 Action::make('create')
                     ->color('gray')
                     ->icon('heroicon-o-envelope')
-                    ->label(__('ارسال تبلیغات'))
+                    ->label(__('vendra-newsletter::actions.send_advertisement'))
                     ->size(Size::Small)
                     ->steps([
                         Step::make('content')
-                            ->description(__('عنوان و متن محتوا'))
-                            ->label(__('محتوا'))
+                            ->description(__('vendra-newsletter::actions.content_title_and_text'))
+                            ->label(__('vendra-newsletter::actions.content'))
                             ->schema([
                                 TextInput::make('subject')
-                                    ->label(__('عنوان'))
+                                    ->label(__('vendra-newsletter::actions.subject'))
                                     ->required(),
                                 // WysiwygEditor::make('description'),
                             ]),
@@ -363,7 +363,7 @@ final class UserResource extends Resource
                         })
                         ->color('gray')
                         ->icon('heroicon-s-building-storefront')
-                        ->label(__('model.affiliate'))
+                        ->label(__('vendra-affiliate::navigation.affiliate'))
                         ->requiresConfirmation()
                         ->hidden(function (User $record): bool {
                             return self::isAgent($record);
@@ -382,7 +382,7 @@ final class UserResource extends Resource
                         ->schema([
                             Select::make('transaction_type')
                                 ->columnSpanFull()
-                                ->label(__('form.category'))
+                                ->label(__('vendra-transaction::attributes.transaction_type'))
                                 ->native(false)
                                 ->options(TransactionTypeEnum::class)
                                 ->required(),
@@ -412,14 +412,14 @@ final class UserResource extends Resource
                                     );
                                 });
 
-                                Notification::make()->success()->title('Transaction created successfully')->send();
+                                Notification::make()->success()->title(__('vendra-user::messages.transaction_created_successfully'))->send();
                             });
                         })
                         ->label('create')
                         ->icon('heroicon-s-user')
                         ->deselectRecordsAfterCompletion()
                         ->sendSuccessNotification(),
-                ])->label(__('navigation.x')),
+                ])->label(__('vendra-user::forms.actions')),
                 BulkActionGroup::make([
                     BulkAction::make('store_affiliate')
                         ->action(function (Collection $records): void {
@@ -434,7 +434,7 @@ final class UserResource extends Resource
                         ->label('تبدیل به نماینده')
                         ->icon('heroicon-s-user')
                         ->deselectRecordsAfterCompletion(),
-                ])->label(__('navigation.affiliate')),
+                ])->label(__('vendra-affiliate::navigation.affiliate')),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

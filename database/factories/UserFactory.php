@@ -6,10 +6,11 @@ namespace Misaf\VendraUser\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Support\TenantAwareness;
 use Misaf\VendraUser\Models\User;
 
 /**
@@ -21,7 +22,6 @@ final class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'tenant_id'         => Tenant::factory(),
             'username'          => fake()->userName(),
             'email'             => fake()->unique()->email(),
             'email_verified_at' => Carbon::now(),
@@ -30,11 +30,18 @@ final class UserFactory extends Factory
         ];
     }
 
-    public function forTenant(Tenant|int $tenant): static
+    /**
+     * No-op without a tenant provider, since there is no `tenant_id` column.
+     */
+    public function forTenant(Model|int $tenant): static
     {
-        $tenantId = $tenant instanceof Tenant ? $tenant->id : $tenant;
+        if ( ! TenantAwareness::enabled()) {
+            return $this;
+        }
 
-        return $this->state(fn(): array => ['tenant_id' => $tenantId]);
+        return $this->state(fn(): array => [
+            'tenant_id' => $tenant instanceof Model ? $tenant->getKey() : $tenant,
+        ]);
     }
 
     public function withRole(string $role): static

@@ -20,7 +20,7 @@ final class ViewUser extends ViewRecord
 
     public function getBreadcrumb(): string
     {
-        return self::$breadcrumb ?? __('filament-panels::resources/pages/view-record.breadcrumb') . ' ' . __('navigation.user');
+        return self::$breadcrumb ?? __('filament-panels::resources/pages/view-record.breadcrumb') . ' ' . __('vendra-user::navigation.user');
     }
 
     public function hasCombinedRelationManagerTabsWithContent(): bool

@@ -10,8 +10,17 @@ final class UserService
 
     private const PASSWORD_LENGTH = 8;
 
-    public function generatePassword(?int $lenght): string
+    public function generatePassword(?int $length = null): string
     {
-        return mb_substr(str_shuffle(str_repeat(self::PASSWORD_CHARACTERS, $lenght ?? self::PASSWORD_LENGTH)), 0, $lenght ?? self::PASSWORD_LENGTH);
+        $length ??= self::PASSWORD_LENGTH;
+        $maxIndex = mb_strlen(self::PASSWORD_CHARACTERS) - 1;
+
+        $password = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $password .= self::PASSWORD_CHARACTERS[random_int(0, $maxIndex)];
+        }
+
+        return $password;
     }
 }

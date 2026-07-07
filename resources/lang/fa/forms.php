@@ -3,5 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'actions' => 'عملیات',
+    'actions'         => 'عملیات',
+    'random_password' => 'رمز عبور تصادفی',
 ];

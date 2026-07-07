@@ -3,5 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'actions' => 'Aktionen',
+    'actions'         => 'Aktionen',
+    'random_password' => 'Zufälliges Passwort',
 ];

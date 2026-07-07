@@ -3,5 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'value_copied' => 'Value copied to clipboard',
+    'transaction_created_successfully' => 'Transaction created successfully',
+    'value_copied'                     => 'Value copied to clipboard',
 ];

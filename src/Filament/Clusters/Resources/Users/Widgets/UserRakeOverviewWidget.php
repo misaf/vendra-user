@@ -129,8 +129,8 @@ final class UserRakeOverviewWidget extends StatsOverviewWidget
         // 12) Return the Stat widget
         return [
             Stat::make('user_rake_stats', Number::format($totalRake))
-                ->label(__('user-rake::widgets.user_rake_stats'))
-                ->description(__('user-rake::widgets.user_rake_stats_description'))
+                ->label(__('vendra-user::widgets.user_rake_stats'))
+                ->description(__('vendra-user::widgets.user_rake_stats_description'))
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->chart($chartData)
                 ->color('primary'),

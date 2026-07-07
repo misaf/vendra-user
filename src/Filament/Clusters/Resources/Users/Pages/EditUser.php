@@ -22,7 +22,7 @@ final class EditUser extends EditRecord
 
     public function getBreadcrumb(): string
     {
-        return self::$breadcrumb ?? __('filament-panels::resources/pages/edit-record.breadcrumb') . ' ' . __('navigation.user');
+        return self::$breadcrumb ?? __('filament-panels::resources/pages/edit-record.breadcrumb') . ' ' . __('vendra-user::navigation.user');
     }
 
     public function hasCombinedRelationManagerTabsWithContent(): bool

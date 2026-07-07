@@ -3,5 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'value_copied' => 'Wert in die Zwischenablage kopiert',
+    'transaction_created_successfully' => 'Transaktion erfolgreich erstellt',
+    'value_copied'                     => 'Wert in die Zwischenablage kopiert',
 ];

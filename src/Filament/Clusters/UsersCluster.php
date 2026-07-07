@@ -19,7 +19,7 @@ final class UsersCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.user');
+        return __('vendra-user::navigation.user');
     }
 
     public static function getClusterBreadcrumb(): string

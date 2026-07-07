@@ -37,22 +37,22 @@ final class LatestUserTableWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->heading(__('navigation.latest_users'))
+            ->heading(__('vendra-user::navigation.latest_users'))
             ->query(User::take(5))
             ->columns([
                 TextColumn::make('username')
-                    ->label(__('form.username')),
+                    ->label(__('vendra-user::attributes.username')),
                 // ->url(fn(User $record): string => ViewUser::getUrl(['record' => $record])),
 
                 TextColumn::make('email')
-                    ->label(__('form.email'))
+                    ->label(__('vendra-user::attributes.email'))
                     ->searchable(),
 
                 TextColumn::make('email_verified_at')
                     ->alignCenter()
                     ->badge()
                     ->extraCellAttributes(['dir' => 'ltr'])
-                    ->label(__('form.verified_at'))
+                    ->label(__('vendra-user::attributes.verified_at'))
                     ->dateTime('Y-m-d H:i')
                     ->sinceTooltip()
                     ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDate('Y-m-d', toLatin: true)),
@@ -61,7 +61,7 @@ final class LatestUserTableWidget extends BaseWidget
                     ->alignCenter()
                     ->badge()
                     ->extraCellAttributes(['dir' => 'ltr'])
-                    ->label(__('form.created_at'))
+                    ->label(__('vendra-user::attributes.created_at'))
                     ->sinceTooltip()
                     ->dateTime('Y-m-d H:i')
                     ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d', toLatin: true)),

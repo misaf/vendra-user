@@ -7,7 +7,7 @@ namespace Misaf\VendraUser\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static string generatePassword(?int $lenght)
+ * @method static string generatePassword(?int $length = null)
  * @method static int|bool updateUserRake(int $userId, float $rake)
  * @method static int|bool updateDailyUserRake(int $userId, float $rake, ?string $timestamp = null)
  * @method static int|bool updateRake(float $rake)

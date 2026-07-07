@@ -30,17 +30,17 @@ final class UserMessengerRelationManager extends RelationManager
 
     public static function getModelLabel(): string
     {
-        return __('user-messenger::navigation.user_messenger');
+        return __('vendra-user::navigation.user_messenger');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('user-messenger::navigation.user_messenger');
+        return __('vendra-user::navigation.user_messenger');
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('user-messenger::navigation.user_messenger');
+        return __('vendra-user::navigation.user_messenger');
     }
 
     public function isReadOnly(): bool
@@ -58,17 +58,17 @@ final class UserMessengerRelationManager extends RelationManager
         return $schema->components([
             Select::make('platform')
                 ->columnSpanFull()
-                ->label(__('user-messenger::attributes.platform'))
+                ->label(__('vendra-user::attributes.platform'))
                 ->native(false)
                 ->options(UserMessengerPlatformEnum::class)
                 ->required(),
 
             TextInput::make('key_name')
-                ->label(__('transaction_metadata.key_name'))
+                ->label(__('vendra-user::attributes.key_name'))
                 ->required(),
 
             TextInput::make('key_value')
-                ->label(__('transaction_metadata.key_value'))
+                ->label(__('vendra-user::attributes.key_value'))
                 ->required(),
         ]);
     }
@@ -79,18 +79,18 @@ final class UserMessengerRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('platform')
                     ->badge()
-                    ->label(__('user-messenger::attributes.platform')),
+                    ->label(__('vendra-user::attributes.platform')),
 
                 TextColumn::make('key_name')
                     ->alignStart()
-                    ->label(__('transaction_metadata.key_name')),
+                    ->label(__('vendra-user::attributes.key_name')),
 
                 TextColumn::make('key_value')
                     ->alignStart()
                     ->copyable()
-                    ->copyMessage(__('user::messages.value_copied'))
+                    ->copyMessage(__('vendra-user::messages.value_copied'))
                     ->copyMessageDuration(1500)
-                    ->label(__('transaction_metadata.key_value')),
+                    ->label(__('vendra-user::attributes.key_value')),
 
                 CreatedAtTextColumn::make('created_at'),
 
@@ -121,11 +121,11 @@ final class UserMessengerRelationManager extends RelationManager
             ->groups([
                 Group::make('key_name')
                     ->collapsible()
-                    ->label(__('transaction_metadata.key_name')),
+                    ->label(__('vendra-user::attributes.key_name')),
 
                 Group::make('key_value')
                     ->collapsible()
-                    ->label(__('transaction_metadata.key_value')),
+                    ->label(__('vendra-user::attributes.key_value')),
             ]);
     }
 }
