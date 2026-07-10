@@ -1,5 +1,6 @@
 {
     "name": "misaf/vendra-user",
+    "version": "0.0.1",
     "description": "Comprehensive user management module with profiles, authentication, media handling and multi-tenant support",
     "keywords": [
         "laravel",
