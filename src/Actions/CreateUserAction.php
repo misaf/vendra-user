@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Actions;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Misaf\VendraPermission\Models\Role;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Models\User;
+use Spatie\Permission\Contracts\Role;
 
 final class CreateUserAction
 {
     public function execute(
-        Tenant $tenant,
+        Model $tenant,
         string $username,
         string $email,
         string $password,
@@ -21,7 +22,7 @@ final class CreateUserAction
         Role|string|null $role = null,
     ): User {
         /** @var User $user */
-        $user = $tenant->execute(function () use ($username, $email, $password, $role, $isVerified): User {
+        $user = app(TenantResolver::class)->execute($tenant, function () use ($username, $email, $password, $role, $isVerified): User {
             /** @var User $user */
             $user = User::query()->create([
                 'username'          => $username,

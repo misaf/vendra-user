@@ -7,8 +7,6 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users;
 use App\Filament\Admin\Resources\ActivityLogs\RelationManagers\ActivityLogRelationManager;
 use App\Filament\Admin\Resources\AuthifyLogs\RelationManagers\AuthifyLogRelationManager;
 use App\Filament\Admin\Resources\Tags\Actions\AddTagAction;
-use App\Forms\Components\WysiwygEditor;
-use App\Jobs\SendBulkAdMailerJob;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -29,10 +27,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\RelationManagers\RelationManagerConfiguration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
-use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\SpatieTagsColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -329,31 +325,6 @@ final class UserResource extends Resource
             ])
             ->filters([
                 TrashedFilter::make(),
-            ])
-            ->headerActions([
-                Action::make('create')
-                    ->color('gray')
-                    ->icon('heroicon-o-envelope')
-                    ->label(__('vendra-newsletter::actions.send_advertisement'))
-                    ->size(Size::Small)
-                    ->steps([
-                        Step::make('content')
-                            ->description(__('vendra-newsletter::actions.content_title_and_text'))
-                            ->label(__('vendra-newsletter::actions.content'))
-                            ->schema([
-                                TextInput::make('subject')
-                                    ->label(__('vendra-newsletter::actions.subject'))
-                                    ->required(),
-                                // WysiwygEditor::make('description'),
-                            ]),
-                    ])
-                    ->action(function (array $data): void {
-                        SendBulkAdMailerJob::dispatch(
-                            subject: $data['subject'],
-                            description: $data['description'],
-                        );
-                    })
-                    ->slideOver(),
             ])
             ->recordActions([
                 ActionGroup::make([

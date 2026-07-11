@@ -9,6 +9,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
 use Misaf\VendraSupport\Support\TenantSeeders;
 use Misaf\VendraUser\Console\Commands\AssignSuperAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
@@ -22,6 +23,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 final class UserServiceProvider extends PackageServiceProvider
 {
+    use ResolvesConfiguredPanels;
+
     public function configurePackage(Package $package): void
     {
         $package
@@ -46,7 +49,7 @@ final class UserServiceProvider extends PackageServiceProvider
         $this->app->bind('user-service', fn(Application $app) => new UserService());
 
         Panel::configureUsing(function (Panel $panel): void {
-            if ('admin' !== $panel->getId()) {
+            if ( ! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-user')) {
                 return;
             }
 

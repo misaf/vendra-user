@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Misaf\VendraUser\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
-use Misaf\VendraPermission\Models\Role;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Models\User;
+use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
+use Spatie\Permission\PermissionRegistrar;
 
 final class CreateUserCommand extends Command
 {
@@ -59,18 +61,21 @@ final class CreateUserCommand extends Command
 
         if (
             User::query()
-                ->where('tenant_id', $tenant->id)
+                ->where('tenant_id', $tenant->getKey())
                 ->where('username', $username)
                 ->exists()
         ) {
-            $this->error("A user with username [{$username}] already exists for tenant [{$tenant->id}].");
+            $this->error("A user with username [{$username}] already exists for tenant [{$tenant->getKey()}].");
 
             return self::FAILURE;
         }
 
         try {
             /** @var Role $resolvedRole */
-            $resolvedRole = $tenant->execute(static fn() => Role::findByName($role, $guardName));
+            $resolvedRole = app(TenantResolver::class)->execute(
+                $tenant,
+                fn(): Role => $this->roleModelClass()::findByName($role, $guardName),
+            );
 
             $user = $this->createUserAction->execute(
                 tenant: $tenant,
@@ -80,7 +85,7 @@ final class CreateUserCommand extends Command
                 role: $resolvedRole,
             );
         } catch (RoleDoesNotExist) {
-            $this->error("Role [{$role}] with guard [{$guardName}] not found for tenant [{$tenant->id}].");
+            $this->error("Role [{$role}] with guard [{$guardName}] not found for tenant [{$tenant->getKey()}].");
 
             return self::FAILURE;
         }
@@ -90,10 +95,10 @@ final class CreateUserCommand extends Command
         return self::SUCCESS;
     }
 
-    private function resolveTenant(): ?Tenant
+    private function resolveTenant(): ?Model
     {
         $tenantId = (int) $this->option('tenant');
-        $tenant = Tenant::query()->find($tenantId);
+        $tenant = app(TenantResolver::class)->findByKeyOrSlug($tenantId);
 
         if ( ! $tenant) {
             $this->error("Tenant with ID [{$tenantId}] not found.");
@@ -102,6 +107,14 @@ final class CreateUserCommand extends Command
         }
 
         return $tenant;
+    }
+
+    /**
+     * @return class-string<Role>
+     */
+    private function roleModelClass(): string
+    {
+        return app(PermissionRegistrar::class)->getRoleClass();
     }
 
     private function requiredInput(string $option, string $label, ?string $default = null, bool $secret = false): ?string

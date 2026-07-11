@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Seeders;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Misaf\VendraSupport\Concerns\RequiresCurrentTenant;
 use Misaf\VendraSupport\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
-use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 
@@ -37,7 +37,7 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
         }
     }
 
-    protected function seedFactoryRecords(Tenant $tenant): void
+    protected function seedFactoryRecords(Model $tenant): void
     {
         UserFactory::new()
             ->forTenant($tenant)
@@ -53,7 +53,7 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
     /**
      * @param array<string, mixed> $record
      */
-    protected function seedFixtureRecord(Tenant $tenant, array $record): void
+    protected function seedFixtureRecord(Model $tenant, array $record): void
     {
         $data = $this->validatedFixtureRecord($record);
 
@@ -68,7 +68,7 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
      *     role?: string
      * } $data
      */
-    private function handleSeedFixtureRecord(Tenant $tenant, array $data): void
+    private function handleSeedFixtureRecord(Model $tenant, array $data): void
     {
         $this->createUserAction->execute(
             tenant: $tenant,

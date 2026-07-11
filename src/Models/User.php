@@ -28,7 +28,6 @@ use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Traits\BelongsToTenant;
-use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -111,7 +110,7 @@ final class User extends Authenticatable implements
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class)->withTimestamps();
+        return $this->tenants();
     }
 
     public function getTenants(Panel $panel): Collection
@@ -125,11 +124,13 @@ final class User extends Authenticatable implements
     }
 
     /**
-     * @return BelongsToMany<Tenant, $this>
+     * @return BelongsToMany<Model, $this>
      */
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class)->withTimestamps();
+        return $this
+            ->belongsToMany($this->tenantModelClass(), 'tenant_user', 'user_id', 'tenant_id')
+            ->withTimestamps();
     }
 
     /**
