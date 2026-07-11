@@ -1,6 +1,6 @@
 {
     "name": "misaf/vendra-user",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Comprehensive user management module with profiles, authentication, media handling and multi-tenant support",
     "keywords": [
         "laravel",
@@ -22,8 +22,8 @@
         "illuminate/support": "^13.0",
         "laravel/pennant": "^1.24",
         "misaf/filament-jalali": "^5.1.4",
-        "misaf/vendra-multimedia": "^0.0.4",
-        "misaf/vendra-support": "^0.0.4",
+        "misaf/vendra-multimedia": "^0.0.5",
+        "misaf/vendra-support": "^0.0.5",
         "spatie/laravel-package-tools": "^1.93.1",
         "staudenmeir/belongs-to-through": "^2.18"
     },
@@ -32,7 +32,7 @@
         "larastan/larastan": "^3.10.0",
         "laravel/boost": "^2.4.12",
         "laravel/pint": "^1.29.3",
-        "misaf/vendra-testing": "^0.0.4",
+        "misaf/vendra-testing": "^0.0.5",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.9.4",
         "orchestra/testbench": "^11.1",
