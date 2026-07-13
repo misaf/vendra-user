@@ -1,6 +1,6 @@
 ---
 name: vendra-user-development
-description: "Use this skill when creating, modifying, reviewing, or testing the Vendra User module in app-modules/vendra-user, or when creating future user-like Filament/domain modules. Trigger for `User`, `SocialiteUser` models, vendra-user migrations, factories, seeders, policies, permission enums, Filament resources, clusters, forms, tables, relation managers, translations, media collections, plugin/service provider wiring, and module configuration."
+description: "Use this skill when creating, modifying, reviewing, or testing the Vendra User module in packages/vendra-user, or when creating future user-like Filament/domain modules. Trigger for `User`, `SocialiteUser` models, vendra-user migrations, factories, seeders, policies, permission enums, Filament resources, clusters, forms, tables, relation managers, translations, media collections, plugin/service provider wiring, and module configuration."
 ---
 
 # Vendra User
@@ -13,7 +13,7 @@ Before code changes, use Laravel Boost `application-info` and `search-docs` for 
 
 ## Module Boundary
 
-Treat `app-modules/vendra-user` as the source of user domain behavior and Filament admin UI.
+Treat `packages/vendra-user` as the source of user domain behavior and Filament admin UI.
 
 - Use namespace `Misaf\VendraUser`.
 - Keep domain models, factories, seeders, policies, observers, console commands, Filament classes, config, migrations, translations, and tests inside this module.
@@ -73,5 +73,5 @@ Prefer focused Pest tests in the module.
 - Add or update unit tests for model contracts, policy permission coverage, resolver-derived tenant awareness, navigation/config behavior, and translation parity.
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets, plus the standard presets (multi-tenancy core: no `not->toUse('Misaf\VendraTenant')` expectation).
 - Add feature or Livewire tests when changing Filament behavior with meaningful user-visible effects.
-- Run module checks from the package when possible: `composer --working-dir=app-modules/vendra-user test` and `composer --working-dir=app-modules/vendra-user analyse`.
+- Run module checks from the package when possible: `composer --working-dir=packages/vendra-user test` and `composer --working-dir=packages/vendra-user analyse`.
 - If PHP files changed, run Pint for the touched code: `vendor/bin/pint --dirty --format agent` from the host app, or the module formatter if working only inside the package.

@@ -1,6 +1,5 @@
 {
     "name": "misaf/vendra-user",
-    "version": "0.0.7",
     "description": "Comprehensive user management module with profiles, authentication, media handling and multi-tenant support",
     "keywords": [
         "laravel",
@@ -54,13 +53,13 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "0.0.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Misaf\\VendraUser\\Providers\\UserServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-master": "13.x-dev"
         }
     },
     "scripts": {
