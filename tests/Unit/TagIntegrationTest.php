@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Tests\Unit;
 
-use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Contracts\TagResolver;
 use Misaf\VendraSupport\Support\EloquentTagResolver;
 use Misaf\VendraSupport\Support\TagRelationship;
@@ -25,8 +24,3 @@ it('builds a user typed tag relation through the support contract', function ():
             'boolean'  => 'and',
         ]);
 });
-
-final class UserTestTag extends Model
-{
-    protected $table = 'tags';
-}
