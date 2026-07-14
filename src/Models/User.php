@@ -28,6 +28,7 @@ use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Traits\BelongsToTenant;
+use Misaf\VendraSupport\Traits\HasOptionalTags;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -68,9 +69,11 @@ final class User extends Authenticatable implements
     /** @use HasFactory<UserFactory> */
     use HasFactory;
     use HasFeatures;
+    use HasOptionalTags;
     use HasRoles;
     use Notifiable;
     use SoftDeletes;
+    public const string TAG_TYPE = 'user';
 
     /**
      * @return array<string, string>
@@ -108,11 +111,17 @@ final class User extends Authenticatable implements
         return $this->username;
     }
 
+    /**
+     * @return BelongsToMany<Model, $this>
+     */
     public function teams(): BelongsToMany
     {
         return $this->tenants();
     }
 
+    /**
+     * @return Collection<int, Model>
+     */
     public function getTenants(Panel $panel): Collection
     {
         return $this->teams;
@@ -154,6 +163,11 @@ final class User extends Authenticatable implements
     public function multimedia(): MorphMany
     {
         return $this->media();
+    }
+
+    protected function tagType(): string
+    {
+        return self::TAG_TYPE;
     }
 
 }

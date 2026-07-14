@@ -3,6 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'actions'         => 'عملیات',
-    'random_password' => 'رمز عبور تصادفی',
+    'random_password'      => 'رمز عبور تصادفی',
+    'username_helper_text' => 'فقط حروف، خط تیره و زیرخط مجاز است.',
 ];

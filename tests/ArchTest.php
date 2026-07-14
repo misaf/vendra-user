@@ -13,3 +13,10 @@ arch('the user module derives tenancy from the support layer, never a concrete t
 arch('the user module never depends on the permission module that builds on it')
     ->expect('Misaf\VendraUser')
     ->not->toUse('Misaf\VendraPermission');
+
+arch('the user module integrates tags through support, never the tagger or Spatie tags modules')
+    ->expect('Misaf\VendraUser')
+    ->not->toUse([
+        'Misaf\VendraTagger',
+        'Spatie\Tags',
+    ]);

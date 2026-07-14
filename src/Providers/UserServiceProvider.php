@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Providers;
 
+use Composer\InstalledVersions;
+
 use Filament\Panel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\AboutCommand;
@@ -61,13 +63,10 @@ final class UserServiceProvider extends PackageServiceProvider
     {
         $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
 
-        AboutCommand::add('Vendra User', fn() => ['Version' => 'dev-master']);
+        AboutCommand::add('Vendra User', fn() => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
 
         Gate::after(function (User $user): ?true {
             return $user->hasRole(Config::string('vendra-permission.super_admin_role', 'superadmin')) ? true : null;
         });
-
-        // $this->discoverPackageFeatures();
-        // $this->registerTenantFeatures();
     }
 }

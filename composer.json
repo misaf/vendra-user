@@ -65,6 +65,9 @@
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage"
     },
+    "suggest": {
+        "misaf/vendra-tagger": "Install this in the host application to assign typed tags to users."
+    },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true,

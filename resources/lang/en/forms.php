@@ -3,6 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'actions'         => 'Actions',
-    'random_password' => 'Random Password',
+    'random_password'      => 'Random Password',
+    'username_helper_text' => 'Letters, dashes, and underscores are allowed.',
 ];

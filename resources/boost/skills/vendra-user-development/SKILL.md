@@ -1,6 +1,6 @@
 ---
 name: vendra-user-development
-description: "Use this skill when creating, modifying, reviewing, or testing the Vendra User module in packages/vendra-user, or when creating future user-like Filament/domain modules. Trigger for `User`, `SocialiteUser` models, vendra-user migrations, factories, seeders, policies, permission enums, Filament resources, clusters, forms, tables, relation managers, translations, media collections, plugin/service provider wiring, and module configuration."
+description: "Use this skill when creating, modifying, reviewing, or testing the Vendra User module in packages/vendra-user, or when creating future user-like Filament/domain modules. Trigger for the `User` model, vendra-user migrations, factories, seeders, policies, permission enums, Filament resources, clusters, forms, tables, relation managers, translations, media collections, plugin/service provider wiring, and module configuration. OAuth social login lives in the separate `misaf/vendra-socialite` add-on."
 ---
 
 # Vendra User
@@ -19,10 +19,11 @@ Treat `packages/vendra-user` as the source of user domain behavior and Filament 
 - Keep domain models, factories, seeders, policies, observers, console commands, Filament classes, config, migrations, translations, and tests inside this module.
 - Do not place user domain code in the host app unless the host app is only integrating the module.
 - Keep cross-module dependencies explicit in `composer.json`; do not introduce a dependency without approval.
+- Keep tags optional through Support's `HasOptionalTags` and `TagIntegration`. Use the reserved `user` type, never import Vendra Tagger or Spatie Tags, and list Tagger only under Composer `suggest`.
 
 ## Domain Model Standards
 
-Follow the existing `User` and `SocialiteUser` patterns for new user entities.
+Follow the existing `User` model patterns for new user entities. Social login (the `SocialiteUser` model, `SocialiteRegistrar`, and filament-socialite wiring) lives in the separate `misaf/vendra-socialite` package; do not reintroduce it or a `dutchcodingcompany/filament-socialite` dependency here.
 
 - Use `declare(strict_types=1)`, final classes, typed method signatures, and PHPDoc generics for relationships.
 - Follow Laravel comment style: document with PHPDoc (array shapes, generics, `@see`) and reserve inline comments for genuinely complex logic. Match the surrounding file's density and do not add comments that restate the code.
@@ -70,6 +71,7 @@ Migrations, factories, seeders, and translation files are part of the contract.
 Prefer focused Pest tests in the module.
 
 - Keep tests purposeful and prevent unnecessary ones: cover behavior, contracts, and edge cases — not framework internals or trivially typed code. Do not duplicate coverage a focused test already proves, and do not add throwaway verification scripts (or `tinker`) when a test fits.
+- Keep architecture coverage proving the module does not use Vendra Tagger or Spatie Tags directly, and test the typed relationship through the Support resolver.
 - Add or update unit tests for model contracts, policy permission coverage, resolver-derived tenant awareness, navigation/config behavior, and translation parity.
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets, plus the standard presets (multi-tenancy core: no `not->toUse('Misaf\VendraTenant')` expectation).
 - Add feature or Livewire tests when changing Filament behavior with meaningful user-visible effects.

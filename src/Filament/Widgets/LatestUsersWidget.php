@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Widgets;
+namespace Misaf\VendraUser\Filament\Widgets;
 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ViewUser;
 use Misaf\VendraUser\Models\User;
 
-final class LatestUserTableWidget extends BaseWidget
+final class LatestUsersWidget extends BaseWidget
 {
     protected static ?int $sort = 8;
 
@@ -24,25 +23,14 @@ final class LatestUserTableWidget extends BaseWidget
         return 1;
     }
 
-    public static function isDiscovered(): bool
-    {
-        return true;
-    }
-
-    public static function canView(): bool
-    {
-        return true;
-    }
-
     public function table(Table $table): Table
     {
         return $table
             ->heading(__('vendra-user::navigation.latest_users'))
-            ->query(User::take(5))
+            ->query(User::query()->latest()->limit(5))
             ->columns([
                 TextColumn::make('username')
                     ->label(__('vendra-user::attributes.username')),
-                // ->url(fn(User $record): string => ViewUser::getUrl(['record' => $record])),
 
                 TextColumn::make('email')
                     ->label(__('vendra-user::attributes.email'))
@@ -62,8 +50,8 @@ final class LatestUserTableWidget extends BaseWidget
                     ->badge()
                     ->extraCellAttributes(['dir' => 'ltr'])
                     ->label(__('vendra-user::attributes.created_at'))
-                    ->sinceTooltip()
                     ->dateTime('Y-m-d H:i')
+                    ->sinceTooltip()
                     ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d', toLatin: true)),
             ])
             ->searchable(false)

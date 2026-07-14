@@ -8,12 +8,8 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static string generatePassword(?int $length = null)
- * @method static int|bool updateUserRake(int $userId, float $rake)
- * @method static int|bool updateDailyUserRake(int $userId, float $rake, ?string $timestamp = null)
- * @method static int|bool updateRake(float $rake)
- * @method static int|bool updateDailyRake(float $rake, ?string $timestamp = null)
  *
- * @see Misaf\User\Services\UserService
+ * @see \Misaf\VendraUser\Services\UserService
  */
 final class UserService extends Facade
 {

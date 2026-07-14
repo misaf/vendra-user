@@ -6,12 +6,6 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages;
 
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-use Misaf\VendraTransaction\Filament\Clusters\Resources\Transactions\Widgets\TransactionBonusOverviewWidget;
-use Misaf\VendraTransaction\Filament\Clusters\Resources\Transactions\Widgets\TransactionCommissionOverviewWidget;
-use Misaf\VendraTransaction\Filament\Clusters\Resources\Transactions\Widgets\TransactionDepositOverviewWidget;
-use Misaf\VendraTransaction\Filament\Clusters\Resources\Transactions\Widgets\TransactionLimitOverviewWidget;
-use Misaf\VendraTransaction\Filament\Clusters\Resources\Transactions\Widgets\TransactionWithdrawalOverviewWidget;
-use Misaf\VendraUser\Filament\Clusters\Resources\UserLevels\Widgets\UserLevelOverviewWidget;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\UserResource;
 
 final class ViewUser extends ViewRecord
@@ -23,42 +17,13 @@ final class ViewUser extends ViewRecord
         return self::$breadcrumb ?? __('filament-panels::resources/pages/view-record.breadcrumb') . ' ' . __('vendra-user::navigation.user');
     }
 
-    public function hasCombinedRelationManagerTabsWithContent(): bool
-    {
-        return true;
-    }
-
+    /**
+     * @return array<int, EditAction>
+     */
     protected function getHeaderActions(): array
     {
         return [
             EditAction::make(),
-        ];
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    public function getHeaderWidgetsColumns(): array
-    {
-        return [
-            'sm' => 1,
-            'md' => 2,
-            'lg' => 3,
-        ];
-    }
-
-    /**
-     * @return array<class-string<Widget>|WidgetConfiguration>
-     */
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            UserLevelOverviewWidget::class,
-            TransactionDepositOverviewWidget::class,
-            TransactionWithdrawalOverviewWidget::class,
-            TransactionBonusOverviewWidget::class,
-            TransactionCommissionOverviewWidget::class,
-            TransactionLimitOverviewWidget::class,
         ];
     }
 }

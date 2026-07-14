@@ -3,6 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'actions'         => 'Aktionen',
-    'random_password' => 'Zufälliges Passwort',
+    'random_password'      => 'Zufälliges Passwort',
+    'username_helper_text' => 'Buchstaben, Bindestriche und Unterstriche sind erlaubt.',
 ];
