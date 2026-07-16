@@ -54,6 +54,11 @@ final class UserResource extends Resource
         return __('vendra-user::navigation.user');
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('vendra-user::navigation.user_management');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('vendra-user::navigation.user');
