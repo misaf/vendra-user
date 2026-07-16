@@ -11,12 +11,9 @@ use Misaf\VendraUser\Models\User;
 
 final class LatestUsersWidget extends BaseWidget
 {
-    protected static ?int $sort = 8;
+    protected static ?int $sort = 4;
 
-    protected int|string|array $columnSpan = [
-        'sm' => 1,
-        'lg' => 2,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     protected function getColumns(): int
     {
@@ -43,7 +40,7 @@ final class LatestUsersWidget extends BaseWidget
                     ->label(__('vendra-user::attributes.verified_at'))
                     ->dateTime('Y-m-d H:i')
                     ->sinceTooltip()
-                    ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDate('Y-m-d', toLatin: true)),
+                    ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDate('Y-m-d', latinNumbers: true)),
 
                 TextColumn::make('created_at')
                     ->alignCenter()
@@ -52,10 +49,9 @@ final class LatestUsersWidget extends BaseWidget
                     ->label(__('vendra-user::attributes.created_at'))
                     ->dateTime('Y-m-d H:i')
                     ->sinceTooltip()
-                    ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d', toLatin: true)),
+                    ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d', latinNumbers: true)),
             ])
             ->searchable(false)
-            ->paginated(false)
-            ->poll('10s');
+            ->paginated(false);
     }
 }

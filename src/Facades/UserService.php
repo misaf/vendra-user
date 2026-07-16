@@ -15,6 +15,6 @@ final class UserService extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'user-service';
+        return \Misaf\VendraUser\Services\UserService::class;
     }
 }

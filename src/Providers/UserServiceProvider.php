@@ -7,7 +7,6 @@ namespace Misaf\VendraUser\Providers;
 use Composer\InstalledVersions;
 
 use Filament\Panel;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
@@ -48,7 +47,7 @@ final class UserServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->bind('user-service', fn(Application $app) => new UserService());
+        $this->app->singleton(UserService::class);
 
         Panel::configureUsing(function (Panel $panel): void {
             if ( ! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-user')) {

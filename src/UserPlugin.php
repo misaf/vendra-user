@@ -61,9 +61,9 @@ final class UserPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverClusters(
-                in: __DIR__ . '/Filament/Clusters',
-                for: 'Misaf\\VendraUser\\Filament\\Clusters',
+            ->discoverResources(
+                in: __DIR__ . '/Filament/Clusters/Resources',
+                for: 'Misaf\\VendraUser\\Filament\\Clusters\\Resources',
             )
             ->discoverWidgets(
                 in: __DIR__ . '/Filament/Widgets',

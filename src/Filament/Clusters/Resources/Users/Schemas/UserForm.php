@@ -63,8 +63,7 @@ final class UserForm
                     ->label(__('vendra-user::attributes.email_verified_at'))
                     ->maxDate(now())
                     ->native(false)
-                    ->seconds(false)
-                    ->unless(app()->isLocale('fa'), fn(DateTimePicker $component): DateTimePicker => $component->jalali()),
+                    ->seconds(false),
 
                 TextInput::make('password')
                     ->dehydrated(fn($state): bool => filled($state))

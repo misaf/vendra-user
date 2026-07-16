@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Filament\Clusters\Resources\Users;
 
+use BackedEnum;
 use Filament\Clusters\Cluster;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\RelationManagers\RelationGroup;
@@ -11,24 +12,26 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\RelationManagers\RelationManagerConfiguration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
+use Misaf\VendraSupport\Filament\Clusters\CustomersCluster;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ListUsers;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ViewUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas\UserForm;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Tables\UserTable;
-use Misaf\VendraUser\Filament\Clusters\UsersCluster;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Widgets\UserOverviewWidget;
 use Misaf\VendraUser\Models\User;
-use Misaf\VendraUser\UserPlugin;
 
 final class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     protected static ?int $navigationSort = 1;
 
@@ -39,7 +42,7 @@ final class UserResource extends Resource
     /**
      * @var class-string<Cluster>|null
      */
-    protected static ?string $cluster = UsersCluster::class;
+    protected static ?string $cluster = CustomersCluster::class;
 
     public static function getBreadcrumb(): string
     {
@@ -51,14 +54,19 @@ final class UserResource extends Resource
         return __('vendra-user::navigation.user');
     }
 
-    public static function getNavigationGroup(): string
-    {
-        return UserPlugin::get()->getNavigationGroup();
-    }
-
     public static function getNavigationLabel(): string
     {
         return __('vendra-user::navigation.user');
+    }
+
+    public static function getNavigationBadge(): string
+    {
+        return (string) Number::format(User::query()->count());
+    }
+
+    public static function getNavigationBadgeTooltip(): string
+    {
+        return __('vendra-user::navigation.navigation_badge_tooltip');
     }
 
     public static function getPluralModelLabel(): string
@@ -88,11 +96,6 @@ final class UserResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return Cache::rememberForever('user-row-count', fn(): string => (string) Number::format(self::getModel()::count()));
-    }
-
     /**
      * @return array<string, PageRegistration>
      */
@@ -112,6 +115,13 @@ final class UserResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            UserOverviewWidget::class,
+        ];
     }
 
     public static function form(Schema $schema): Schema
