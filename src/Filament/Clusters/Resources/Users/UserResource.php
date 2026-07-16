@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Number;
 use Misaf\VendraSupport\Filament\Clusters\CustomersCluster;
+use Misaf\VendraSupport\Filament\Navigation\NavigationPriority;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ListUsers;
@@ -25,6 +26,7 @@ use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ViewUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas\UserForm;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Tables\UserTable;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Widgets\UserOverviewWidget;
+
 use Misaf\VendraUser\Models\User;
 
 final class UserResource extends Resource
@@ -33,7 +35,7 @@ final class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = NavigationPriority::Users->value;
 
     protected static ?string $recordTitleAttribute = 'username';
 
@@ -54,14 +56,9 @@ final class UserResource extends Resource
         return __('vendra-user::navigation.user');
     }
 
-    public static function getNavigationGroup(): string
-    {
-        return __('vendra-user::navigation.user_management');
-    }
-
     public static function getNavigationLabel(): string
     {
-        return __('vendra-user::navigation.user');
+        return __('vendra-user::navigation.users');
     }
 
     public static function getNavigationBadge(): string
@@ -76,7 +73,7 @@ final class UserResource extends Resource
 
     public static function getPluralModelLabel(): string
     {
-        return __('vendra-user::navigation.user');
+        return __('vendra-user::navigation.users');
     }
 
     /**
