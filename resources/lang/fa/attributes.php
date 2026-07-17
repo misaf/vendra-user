@@ -9,7 +9,6 @@ return [
     'email_verified_at' => 'تاریخ تایید ایمیل',
     'image'             => 'تصویر',
     'password'          => 'رمز عبور',
-    'tags'              => 'برچسب‌ها',
     'updated_at'        => 'بروزرسانی',
     'username'          => 'نام کاربری',
     'verified_at'       => 'تاریخ تایید',

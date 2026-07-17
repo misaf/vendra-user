@@ -11,6 +11,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Misaf\VendraSupport\Support\TagIntegration;
@@ -23,7 +27,7 @@ final class UserTable
             ->columns([
                 TextColumn::make('row')
                     ->label('#')
-                    ->rowIndex(),
+                    ->rowIndex()->sortable(),
 
                 TextColumn::make('username')
                     ->label(__('vendra-user::attributes.username'))
@@ -47,7 +51,7 @@ final class UserTable
                     ->label(__('vendra-user::attributes.email_verified_at'))
                     ->sinceTooltip()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->unless(
+                    ->when(
                         app()->isLocale('fa'),
                         fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
                         fn(TextColumn $column) => $column->dateTime('Y-m-d H:i'),
@@ -60,7 +64,7 @@ final class UserTable
                     ->label(__('vendra-user::attributes.created_at'))
                     ->sinceTooltip()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->unless(
+                    ->when(
                         app()->isLocale('fa'),
                         fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
                         fn(TextColumn $column) => $column->dateTime('Y-m-d H:i'),
@@ -73,15 +77,27 @@ final class UserTable
                     ->label(__('vendra-user::attributes.updated_at'))
                     ->sinceTooltip()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->unless(
+                    ->when(
                         app()->isLocale('fa'),
                         fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
                         fn(TextColumn $column) => $column->dateTime('Y-m-d H:i'),
                     ),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            ->filters(
+                [
+                    TrashedFilter::make(),
+                    QueryBuilder::make()
+                        ->constraints([
+                            TextConstraint::make('username')
+                                ->label(__('vendra-user::attributes.username')),
+                            TextConstraint::make('email')
+                                ->label(__('vendra-user::attributes.email')),
+                            BooleanConstraint::make('email_verified_at')
+                                ->label(__('vendra-user::attributes.email_verified_at')),
+                        ]),
+                ],
+                layout: FiltersLayout::AboveContentCollapsible,
+            )
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -96,7 +112,7 @@ final class UserTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(column: 'id', direction: 'desc');
     }
 
     /** @return list<TextColumn> */
@@ -109,7 +125,7 @@ final class UserTable
         return [
             TextColumn::make('tags.name')
                 ->badge()
-                ->label(__('vendra-user::attributes.tags'))
+                ->label(__('vendra-support::attributes.tags'))
                 ->toggleable(),
         ];
     }

@@ -9,7 +9,6 @@ return [
     'email_verified_at' => 'E-Mail verifiziert am',
     'image'             => 'Bild',
     'password'          => 'Passwort',
-    'tags'              => 'Schlagwörter',
     'updated_at'        => 'Aktualisiert am',
     'username'          => 'Benutzername',
     'verified_at'       => 'Verifiziert am',

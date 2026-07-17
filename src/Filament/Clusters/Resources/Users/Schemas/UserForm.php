@@ -11,17 +11,21 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
-use Misaf\VendraSupport\Support\TagIntegration;
+
+use Misaf\VendraSupport\Filament\Concerns\InteractsWithTagFields;
 use Misaf\VendraSupport\Support\TenantAwareness;
 use Misaf\VendraUser\Facades\UserService;
 use Misaf\VendraUser\Rules\EmailValidation;
 
 final class UserForm
 {
+    use InteractsWithTagFields;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -39,7 +43,10 @@ final class UserForm
                     ->minLength(3)
                     ->required()
                     ->rules(['alpha_dash'])
-                    ->unique(modifyRuleUsing: fn(Unique $rule): Unique => $rule->withoutTrashed()),
+                    ->unique(
+                        modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
+                            ->withoutTrashed(),
+                    ),
 
                 TextInput::make('email')
                     ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.email'))
@@ -73,7 +80,7 @@ final class UserForm
                         Action::make('generatePassword')
                             ->action(fn(Set $set) => $set('password', UserService::generatePassword(10)))
                             ->disabled(fn(string $operation): bool => 'view' === $operation)
-                            ->icon('heroicon-o-shield-check')
+                            ->icon(Heroicon::OutlinedShieldCheck)
                             ->iconPosition(fn(): IconPosition => app()->isLocale('fa') ? IconPosition::After : IconPosition::Before)
                             ->label(__('vendra-user::forms.random_password')),
                     )
@@ -104,21 +111,4 @@ final class UserForm
             ]);
     }
 
-    /** @return list<Select> */
-    private static function tagFields(): array
-    {
-        if ( ! TagIntegration::isAvailable()) {
-            return [];
-        }
-
-        return [
-            Select::make('tags')
-                ->columnSpanFull()
-                ->label(__('vendra-user::attributes.tags'))
-                ->multiple()
-                ->native(false)
-                ->preload()
-                ->relationship('tags', 'name'),
-        ];
-    }
 }

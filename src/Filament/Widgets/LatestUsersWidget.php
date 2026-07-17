@@ -38,18 +38,24 @@ final class LatestUsersWidget extends BaseWidget
                     ->badge()
                     ->extraCellAttributes(['dir' => 'ltr'])
                     ->label(__('vendra-user::attributes.verified_at'))
-                    ->dateTime('Y-m-d H:i')
                     ->sinceTooltip()
-                    ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDate('Y-m-d', latinNumbers: true)),
+                    ->when(
+                        app()->isLocale('fa'),
+                        fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
+                        fn(TextColumn $column) => $column->dateTime('Y-m-d H:i')
+                    ),
 
                 TextColumn::make('created_at')
                     ->alignCenter()
                     ->badge()
                     ->extraCellAttributes(['dir' => 'ltr'])
                     ->label(__('vendra-user::attributes.created_at'))
-                    ->dateTime('Y-m-d H:i')
                     ->sinceTooltip()
-                    ->unless(app()->isLocale('fa'), fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d', latinNumbers: true)),
+                    ->when(
+                        app()->isLocale('fa'),
+                        fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
+                        fn(TextColumn $column) => $column->dateTime('Y-m-d H:i')
+                    ),
             ])
             ->searchable(false)
             ->paginated(false);

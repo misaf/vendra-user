@@ -43,7 +43,7 @@ return new class () extends Migration {
             $table->softDeletesTz();
 
             TenantSchema::addTenantIndex($table);
-            $table->index(TenantSchema::tenantIndex(['username']));
+            $table->unique(TenantSchema::tenantIndex(['username']));
             $table->index(TenantSchema::tenantIndex(['email']));
             $table->index(TenantSchema::tenantIndex(['password_fingerprint']));
         });
