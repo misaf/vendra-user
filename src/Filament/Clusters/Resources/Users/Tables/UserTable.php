@@ -27,7 +27,7 @@ final class UserTable
             ->columns([
                 TextColumn::make('row')
                     ->label('#')
-                    ->rowIndex()->sortable(),
+                    ->rowIndex()->sortable(['id']),
 
                 TextColumn::make('username')
                     ->label(__('vendra-user::attributes.username'))
