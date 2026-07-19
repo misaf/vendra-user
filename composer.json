@@ -1,12 +1,13 @@
 {
     "name": "misaf/vendra-user",
     "description": "Comprehensive user management module with profiles, authentication, media handling and multi-tenant support",
+    "license": "MIT",
+    "type": "vendra-module",
     "keywords": [
         "laravel",
         "filamentphp",
         "user"
     ],
-    "license": "MIT",
     "authors": [
         {
             "name": "Ehsan Mahmoodi",
@@ -14,7 +15,11 @@
             "role": "Developer"
         }
     ],
-    "type": "vendra-module",
+    "homepage": "https://github.com/misaf/vendra-user",
+    "support": {
+        "issues": "https://github.com/misaf/vendra-user/issues",
+        "source": "https://github.com/misaf/vendra-user"
+    },
     "require": {
         "php": "^8.3",
         "filament/filament": "^5.6.8",
@@ -40,6 +45,11 @@
         "pestphp/pest-plugin-laravel": "^4.1",
         "phpstan/extension-installer": "^1.4.3"
     },
+    "suggest": {
+        "misaf/vendra-tagger": "Install this in the host application to assign typed tags to users."
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Misaf\\VendraUser\\": "src/",
@@ -51,6 +61,16 @@
             "Misaf\\VendraUser\\Database\\Factories\\": "database/factories/",
             "Misaf\\VendraUser\\Tests\\": "tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
@@ -65,20 +85,5 @@
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage"
     },
-    "suggest": {
-        "misaf/vendra-tagger": "Install this in the host application to assign typed tags to users."
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true,
-            "phpstan/extension-installer": true
-        },
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
     "$schema": "https://getcomposer.org/schema.json"
 }

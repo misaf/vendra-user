@@ -49,7 +49,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $deleted_at
  */
 #[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
-#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token'])]
+#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard'])]
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements
     FilamentUser,

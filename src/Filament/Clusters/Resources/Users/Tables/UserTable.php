@@ -30,7 +30,8 @@ final class UserTable
         $columns = [
             TextColumn::make('row')
                 ->label('#')
-                ->rowIndex()->sortable(['id']),
+                ->rowIndex()
+                ->sortable(['id']),
 
             TextColumn::make('username')
                 ->label(__('vendra-user::attributes.username'))
@@ -64,7 +65,6 @@ final class UserTable
                 ->extraCellAttributes(['dir' => 'ltr'])
                 ->label(__('vendra-user::attributes.created_at'))
                 ->sinceTooltip()
-                ->toggleable(isToggledHiddenByDefault: true)
                 ->when(
                     app()->isLocale('fa'),
                     fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
@@ -77,7 +77,6 @@ final class UserTable
                 ->extraCellAttributes(['dir' => 'ltr'])
                 ->label(__('vendra-user::attributes.updated_at'))
                 ->sinceTooltip()
-                ->toggleable(isToggledHiddenByDefault: true)
                 ->when(
                     app()->isLocale('fa'),
                     fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),

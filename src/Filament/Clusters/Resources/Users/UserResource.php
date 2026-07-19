@@ -24,6 +24,7 @@ use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ListUsers;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ViewUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas\UserForm;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas\UserInfolist;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Tables\UserTable;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Widgets\UserOverviewWidget;
 
@@ -129,6 +130,11 @@ final class UserResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return UserForm::configure($schema);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return UserInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table

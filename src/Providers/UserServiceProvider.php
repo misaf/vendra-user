@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
 use Misaf\VendraSupport\Support\TenantSeeders;
+use Misaf\VendraSupport\Support\TenantTableRegistry;
 use Misaf\VendraUser\Console\Commands\AssignSuperAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
 use Misaf\VendraUser\Console\Commands\SeedCommand;
@@ -60,6 +61,7 @@ final class UserServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->app->make(TenantTableRegistry::class)->register('users');
         $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
 
         AboutCommand::add('Vendra User', fn() => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);

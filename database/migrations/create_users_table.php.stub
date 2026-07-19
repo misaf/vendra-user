@@ -41,9 +41,13 @@ return new class () extends Migration {
             $table->rememberToken();
             $table->timestampsTz();
             $table->softDeletesTz();
+            $table->string('active_email_guard')
+                ->nullable()
+                ->virtualAs('CASE WHEN deleted_at IS NULL THEN email ELSE NULL END');
 
             TenantSchema::addTenantIndex($table);
             $table->unique(TenantSchema::tenantIndex(['username']));
+            $table->unique(TenantSchema::tenantIndex(['active_email_guard']), 'users_active_email_unique');
             $table->index(TenantSchema::tenantIndex(['email']));
             $table->index(TenantSchema::tenantIndex(['password_fingerprint']));
         });

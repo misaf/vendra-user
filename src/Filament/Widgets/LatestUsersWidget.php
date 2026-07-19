@@ -23,7 +23,7 @@ final class LatestUsersWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->heading(__('vendra-user::navigation.latest_users'))
+            ->heading(__('vendra-user::navigation.recent_users'))
             ->query(User::query()->latest()->limit(5))
             ->columns([
                 TextColumn::make('username')
