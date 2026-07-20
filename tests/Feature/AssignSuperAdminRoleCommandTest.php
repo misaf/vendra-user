@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Config;
 use Misaf\VendraSupport\Contracts\TenantResolver;
-use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Models\User;
 use Spatie\Permission\PermissionRegistrar;
 
 it('infers the tenant and assigns the configured role model and role name', function (): void {
     Config::set('vendra-permission.super_admin_role', 'platform-owner');
 
-    $otherTenant = Tenant::factory()->enabled()->create();
-    $tenant = Tenant::factory()->enabled()->create();
+    $otherTenant = createTestTenant();
+    $tenant = createTestTenant();
     $tenantResolver = app(TenantResolver::class);
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
 
@@ -48,8 +47,8 @@ it('infers the tenant and assigns the configured role model and role name', func
 });
 
 it('does not resolve a user from another tenant', function (): void {
-    $userTenant = Tenant::factory()->enabled()->create();
-    $selectedTenant = Tenant::factory()->enabled()->create();
+    $userTenant = createTestTenant();
+    $selectedTenant = createTestTenant();
     $tenantResolver = app(TenantResolver::class);
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
 
@@ -73,7 +72,7 @@ it('does not resolve a user from another tenant', function (): void {
 });
 
 it('fails when the user does not exist in the selected tenant', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = createTestTenant();
 
     $this->artisan('user:assign-super-admin', [
         'user_id'  => 999,
@@ -84,7 +83,7 @@ it('fails when the user does not exist in the selected tenant', function (): voi
 });
 
 it('fails when the configured role does not exist for the selected tenant', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = createTestTenant();
     $tenantResolver = app(TenantResolver::class);
     $user = $tenantResolver->execute(
         $tenant,
@@ -104,7 +103,7 @@ it('fails when the configured role does not exist for the selected tenant', func
 it('uses the user model default guard', function (): void {
     Config::set('auth.defaults.guard', 'sanctum');
 
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = createTestTenant();
     $tenantResolver = app(TenantResolver::class);
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
     $role = $tenantResolver->execute(
@@ -129,7 +128,7 @@ it('uses the user model default guard', function (): void {
 });
 
 it('does not duplicate an existing assignment', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = createTestTenant();
     $tenantResolver = app(TenantResolver::class);
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
     $role = $tenantResolver->execute(

@@ -3,12 +3,11 @@
 declare(strict_types=1);
 
 use Misaf\VendraSupport\Contracts\TenantResolver;
-use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Spatie\Permission\PermissionRegistrar;
 
 it('creates a user within the tenant context and assigns the given role name', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = createTestTenant();
 
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
 
@@ -31,7 +30,7 @@ it('creates a user within the tenant context and assigns the given role name', f
 });
 
 it('creates an unverified user without a role', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = createTestTenant();
 
     $user = app(CreateUserAction::class)->execute(
         tenant: $tenant,
