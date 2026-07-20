@@ -64,7 +64,7 @@ final class UserServiceProvider extends PackageServiceProvider
         $this->app->make(TenantTableRegistry::class)->register('users');
         $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
 
-        AboutCommand::add('Vendra User', fn() => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
+        AboutCommand::add('Vendra User', fn(): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
 
         Gate::after(function (User $user): ?true {
             return $user->hasRole(Config::string('vendra-permission.super_admin_role', 'superadmin')) ? true : null;
