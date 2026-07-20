@@ -37,6 +37,7 @@
         "larastan/larastan": "^3.10.0",
         "laravel/boost": "^2.4.12",
         "laravel/pint": "^1.29.3",
+        "misaf/vendra-tenant": "self.version",
         "misaf/vendra-testing": "self.version",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.9.4",
