@@ -8,11 +8,11 @@ return [
     ],
 
     'empty_state' => [
-        'heading' => [
-            'users' => 'Noch keine Benutzer',
-        ],
         'description' => [
             'users' => 'Erstellen Sie den ersten Benutzer, um zu beginnen.',
+        ],
+        'heading' => [
+            'users' => 'Noch keine Benutzer',
         ],
     ],
 ];

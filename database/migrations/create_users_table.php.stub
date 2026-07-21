@@ -31,6 +31,9 @@ return new class () extends Migration {
         Schema::create('users', function (Blueprint $table): void {
             $table->id();
             TenantSchema::addTenantColumn($table);
+            $table->unsignedBigInteger('account_id')
+                ->nullable()
+                ->index();
             $table->string('username');
             $table->string('email');
             $table->timestampTz('email_verified_at')
@@ -39,6 +42,9 @@ return new class () extends Migration {
             $table->string('password_fingerprint', 64)
                 ->nullable();
             $table->rememberToken();
+            $table->boolean('is_platform_admin')
+                ->default(false)
+                ->index();
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->string('active_email_guard')
