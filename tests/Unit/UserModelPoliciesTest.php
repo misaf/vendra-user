@@ -15,7 +15,7 @@ it('hides tenant and credential attributes', function (): void {
 });
 
 it('defines policy permissions for the user resource', function (): void {
-    expect(array_column(UserPolicyEnum::cases(), 'value'))->toHaveCount(11);
+    expect(array_column(UserPolicyEnum::cases(), 'value'))->toHaveCount(10);
 });
 
 it('uses kebab-case permission names scoped per model', function (): void {

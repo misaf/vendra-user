@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieTagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -93,6 +94,10 @@ final class UserTable
 
         return $table
             ->columns($columns)
+            ->description(__('vendra-user::tables.description.users'))
+            ->emptyStateHeading(__('vendra-user::tables.empty_state.heading.users'))
+            ->emptyStateDescription(__('vendra-user::tables.empty_state.description.users'))
+            ->emptyStateIcon(Heroicon::OutlinedUserGroup)
             ->filters(
                 [
                     TrashedFilter::make(),

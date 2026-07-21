@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Filament\Facades\Filament;
-use Misaf\VendraPermission\Tests\Support\PermissionModuleTestContext;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
 use Misaf\VendraUser\Models\User;
@@ -11,7 +10,7 @@ use Misaf\VendraUser\Models\User;
 use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
-    $this->tenant = PermissionModuleTestContext::setUpFilamentAdminContext();
+    $this->tenant = setUpFilamentSuperAdminTestContext();
 });
 
 it('rejects a duplicate username within the current tenant', function (): void {

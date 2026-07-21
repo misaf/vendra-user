@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Filament\Facades\Filament;
-use Misaf\VendraPermission\Tests\Support\PermissionModuleTestContext;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
@@ -13,7 +12,7 @@ use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ViewUser;
 use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
-    PermissionModuleTestContext::setUpFilamentAdminContext();
+    setUpFilamentSuperAdminTestContext();
 });
 
 it('renders the create user page under strict authorization', function (): void {

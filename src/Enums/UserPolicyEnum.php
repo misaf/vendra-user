@@ -11,7 +11,6 @@ enum UserPolicyEnum: string
     case DeleteAny = 'delete-any-user';
     case ForceDelete = 'force-delete-user';
     case ForceDeleteAny = 'force-delete-any-user';
-    case Replicate = 'replicate-user';
     case Restore = 'restore-user';
     case RestoreAny = 'restore-any-user';
     case Update = 'update-user';
