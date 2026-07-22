@@ -38,20 +38,19 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property int $id
  * @property int $tenant_id
- * @property int|null $account_id
+ * @property int|null $reseller_id
  * @property string $username
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $password_fingerprint
- * @property bool $is_platform_admin
  * @property string|null $remember_token
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
 #[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
-#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard'])]
+#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard', 'active_reseller_guard'])]
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements
     FilamentUser,
@@ -83,36 +82,34 @@ final class User extends Authenticatable implements
     protected function casts(): array
     {
         return [
-            'id'                   => 'integer',
-            'tenant_id'            => 'integer',
-            'account_id'           => 'integer',
-            'username'             => 'string',
-            'email'                => 'string',
-            'email_verified_at'    => 'datetime',
-            'password'             => 'string',
-            'password_fingerprint' => 'string',
-            'is_platform_admin'    => 'boolean',
-            'remember_token'       => 'string',
+            'id'                    => 'integer',
+            'tenant_id'             => 'integer',
+            'reseller_id'           => 'integer',
+            'username'              => 'string',
+            'email'                 => 'string',
+            'email_verified_at'     => 'datetime',
+            'password'              => 'string',
+            'password_fingerprint'  => 'string',
+            'remember_token'        => 'string',
         ];
     }
 
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($panel->getId()) {
-            'platform' => (bool) $this->is_platform_admin,
-            'account'  => $this->isAccountOwner(),
-            'admin'    => $this->hasRole('super-admin') || $this->hasRole('admin'),
-            'user'     => $this->hasAnyRole(['super-admin', 'admin', 'reseller']),
-            default    => false,
+            'reseller'  => $this->isResellerOwner(),
+            'admin'     => $this->hasRole('super-admin') || $this->hasRole('admin'),
+            'user'      => $this->hasAnyRole(['super-admin', 'admin', 'reseller']),
+            default     => false,
         };
     }
 
     /**
-     * Whether this user operates a billing account (owns its websites).
+     * Whether this user operates a billing reseller (owns its properties).
      */
-    public function isAccountOwner(): bool
+    public function isResellerOwner(): bool
     {
-        return null !== $this->account_id;
+        return null !== $this->reseller_id;
     }
 
     public function getFilamentName(): string
