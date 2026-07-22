@@ -31,9 +31,6 @@ return new class () extends Migration {
         Schema::create('users', function (Blueprint $table): void {
             $table->id();
             TenantSchema::addTenantColumn($table);
-            $table->unsignedBigInteger('reseller_id')
-                ->nullable()
-                ->index();
             $table->string('username');
             $table->string('email');
             $table->timestampTz('email_verified_at')
@@ -47,14 +44,9 @@ return new class () extends Migration {
             $table->string('active_email_guard')
                 ->nullable()
                 ->virtualAs('CASE WHEN deleted_at IS NULL THEN email ELSE NULL END');
-            $table->unsignedBigInteger('active_reseller_guard')
-                ->nullable()
-                ->virtualAs('CASE WHEN reseller_id IS NOT NULL AND deleted_at IS NULL THEN reseller_id ELSE NULL END');
-
             TenantSchema::addTenantIndex($table);
             $table->unique(TenantSchema::tenantIndex(['username']));
             $table->unique(TenantSchema::tenantIndex(['active_email_guard']), 'users_active_email_unique');
-            $table->unique('active_reseller_guard', 'users_active_reseller_unique');
             $table->index(TenantSchema::tenantIndex(['email']));
             $table->index(TenantSchema::tenantIndex(['password_fingerprint']));
         });

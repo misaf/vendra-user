@@ -10,6 +10,12 @@ The `misaf/vendra-user` package owns user management, authentication, media hand
 - Every field listed in a model's `$translatable` array must definitely use a JSON database column. Keep its model traits/casts, factories, validation, Filament locale UI, API serialization, and tests translation-aware.
 - A field not listed in `$translatable` must use the appropriate scalar database type and must not use Spatie Translatable, translatable slug traits, locale switchers, translated callbacks, or translation-shaped array data.
 
+### Vendra Transitive API Policy
+
+- Treat a Vendra dependency intentionally exposed through the public API of a directly required Vendra platform package as part of the supported public contract of that package.
+- Do not add a redundant direct Composer requirement solely because source code imports a type from that exposed dependency.
+- Apply this only to Vendra platform packages listed under `require`; never extend it to `require-dev`, `suggest`, incidental implementation dependencies, or third-party packages. Removing or replacing an exposed dependency is a breaking change; keep `self.version` alignment across the Vendra package graph.
+
 - Register every table whose migration calls `TenantSchema::addTenantColumn()` with `TenantTableRegistry` in this package's service provider, preserving configured table names and connections, so `vendra-tenant:enable {tenant}` can retrofit schemas migrated before tenancy was enabled.
 
 - Keep user domain code inside `packages/vendra-user` using the `Misaf\VendraUser` namespace.
@@ -18,7 +24,7 @@ The `misaf/vendra-user` package owns user management, authentication, media hand
 - Follow the concrete models and neighboring files in this package; do not apply translation, media, slug, sorting, or soft-delete patterns unless the affected model already uses them.
 - Tenant awareness is owned by `misaf/vendra-support` via the bound `TenantResolver`; consume it through `Misaf\VendraSupport\Support\TenantAwareness` and `BelongsToTenant`, not a `tenant_aware` config toggle.
 - The `User` model implements Filament tenant membership (`HasTenants`, `teams()` / `tenants()`) while resolving the tenant model through `BelongsToTenant` from `misaf/vendra-support`. Keep the module independent of concrete providers and never reference `Misaf\VendraTenant`.
-- `User` carries a nullable `reseller_id` (a billing reseller owned by `misaf/vendra-subscription`, exposed via `isResellerOwner()`). `canAccessPanel()` gates the app's panels by this for `reseller` and by roles for `admin`/`user`. Console operators belong to the host application's separate authentication provider and must never be represented by this model. Keep `reseller_id` a plain nullable column with no relation here (no dependency on the subscription module).
+- `User` represents tenant-scoped application users only. Platform operators and reseller accounts belong to the host application's separate authentication providers and must never be represented by this model.
 - Keep Filament resources thin by delegating forms to `Schemas/*Form.php` and tables to `Tables/*Table.php`.
 - Because `UserResource` declares a `$cluster`, keep its complete resource tree under `src/Filament/Clusters/Resources/`, use the matching `Misaf\VendraUser\Filament\Clusters\Resources` namespace, and keep plugin discovery aligned. Any future resource without a cluster must instead live under `src/Filament/Resources/`.
 - Keep `UserResource` in `CustomersCluster`, ungrouped and ordered through `NavigationPriority`; optional user-domain resources such as User Profile use the same cluster with their own priority.

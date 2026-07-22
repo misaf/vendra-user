@@ -44,13 +44,6 @@ final class UserFactory extends Factory
         ]);
     }
 
-    public function forReseller(int $resellerId): static
-    {
-        return $this->state(fn(): array => [
-            'reseller_id' => $resellerId,
-        ]);
-    }
-
     public function withRole(string $role): static
     {
         return $this->afterCreating(function (User $user) use ($role): void {

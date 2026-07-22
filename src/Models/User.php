@@ -38,7 +38,6 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property int $id
  * @property int $tenant_id
- * @property int|null $reseller_id
  * @property string $username
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -50,7 +49,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $deleted_at
  */
 #[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
-#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard', 'active_reseller_guard'])]
+#[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard'])]
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements
     FilamentUser,
@@ -84,7 +83,6 @@ final class User extends Authenticatable implements
         return [
             'id'                    => 'integer',
             'tenant_id'             => 'integer',
-            'reseller_id'           => 'integer',
             'username'              => 'string',
             'email'                 => 'string',
             'email_verified_at'     => 'datetime',
@@ -97,19 +95,9 @@ final class User extends Authenticatable implements
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($panel->getId()) {
-            'reseller'  => $this->isResellerOwner(),
-            'admin'     => $this->hasRole('super-admin') || $this->hasRole('admin'),
-            'user'      => $this->hasAnyRole(['super-admin', 'admin', 'reseller']),
-            default     => false,
+            'admin' => $this->hasRole('super-admin') || $this->hasRole('admin'),
+            default => false,
         };
-    }
-
-    /**
-     * Whether this user operates a billing reseller (owns its properties).
-     */
-    public function isResellerOwner(): bool
-    {
-        return null !== $this->reseller_id;
     }
 
     public function getFilamentName(): string
