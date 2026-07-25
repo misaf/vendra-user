@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas;
 
-use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\IconPosition;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 
+use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
+use Misaf\VendraSupport\Rules\EmailValidation;
 use Misaf\VendraSupport\Support\TagIntegration;
 use Misaf\VendraSupport\Support\TenantAwareness;
-use Misaf\VendraUser\Facades\UserService;
-use Misaf\VendraUser\Rules\EmailValidation;
 
 final class UserForm
 {
@@ -74,14 +70,7 @@ final class UserForm
                 ->dehydrated(fn($state): bool => filled($state))
                 ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                 ->extraAttributes(['dir' => 'ltr'])
-                ->hintAction(
-                    Action::make('generatePassword')
-                        ->action(fn(Set $set) => $set('password', UserService::generatePassword(10)))
-                        ->disabled(fn(string $operation): bool => 'view' === $operation)
-                        ->icon(Heroicon::OutlinedShieldCheck)
-                        ->iconPosition(fn(): IconPosition => app()->isLocale('fa') ? IconPosition::After : IconPosition::Before)
-                        ->label(__('vendra-user::forms.random_password')),
-                )
+                ->hintAction(GeneratePasswordAction::make())
                 ->label(__('vendra-user::attributes.password'))
                 ->live(debounce: 500)
                 ->password()

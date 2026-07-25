@@ -17,7 +17,6 @@ use Misaf\VendraUser\Console\Commands\AssignSuperAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
 use Misaf\VendraUser\Console\Commands\SeedCommand;
 use Misaf\VendraUser\Models\User;
-use Misaf\VendraUser\Services\UserService;
 use Misaf\VendraUser\UserPlugin;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -48,8 +47,6 @@ final class UserServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(UserService::class);
-
         Panel::configureUsing(function (Panel $panel): void {
             if ( ! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-user')) {
                 return;
