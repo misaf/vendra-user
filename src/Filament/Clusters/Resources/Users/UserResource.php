@@ -14,9 +14,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Number;
+use InvalidArgumentException;
 use Misaf\VendraSupport\Filament\Clusters\CustomersCluster;
 use Misaf\VendraSupport\Filament\Navigation\NavigationPriority;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
@@ -85,15 +87,22 @@ final class UserResource extends Resource
         return ['username', 'email'];
     }
 
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with('roles');
+    }
+
     /**
      * @return array<string, string>
      */
     public static function getGlobalSearchResultDetails(Model $record): array
     {
+        $user = self::user($record);
+
         return [
-            __('vendra-user::attributes.email')      => $record->email,
+            __('vendra-user::attributes.email')      => $user->email,
             __('vendra-permission::navigation.role') => Arr::join(
-                $record->roles()->pluck('name')->toArray(),
+                $user->roles->pluck('name')->all(),
                 ', ',
             ),
         ];
@@ -140,5 +149,14 @@ final class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return UserTable::configure($table);
+    }
+
+    private static function user(Model $record): User
+    {
+        if ( ! $record instanceof User) {
+            throw new InvalidArgumentException('User resources require a User record.');
+        }
+
+        return $record;
     }
 }
