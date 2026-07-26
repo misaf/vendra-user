@@ -81,14 +81,14 @@ final class User extends Authenticatable implements
     protected function casts(): array
     {
         return [
-            'id'                    => 'integer',
-            'tenant_id'             => 'integer',
-            'username'              => 'string',
-            'email'                 => 'string',
-            'email_verified_at'     => 'datetime',
-            'password'              => 'string',
-            'password_fingerprint'  => 'string',
-            'remember_token'        => 'string',
+            'id'                   => 'integer',
+            'tenant_id'            => 'integer',
+            'username'             => 'string',
+            'email'                => 'string',
+            'email_verified_at'    => 'datetime',
+            'password'             => 'string',
+            'password_fingerprint' => 'string',
+            'remember_token'       => 'string',
         ];
     }
 

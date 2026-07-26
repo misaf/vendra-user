@@ -14,8 +14,8 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 
+use Misaf\LaravelEmailValidation\Rules\EmailValidation;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
-use Misaf\VendraSupport\Rules\EmailValidation;
 use Misaf\VendraSupport\Support\TagIntegration;
 use Misaf\VendraSupport\Support\TenantAwareness;
 
@@ -51,22 +51,26 @@ final class UserForm
                 ->live(onBlur: true)
                 ->maxLength(255)
                 ->required()
-                ->rules(['bail', 'email:rfc,strict,spoof,filter,filter_unicode', new EmailValidation(app()->isProduction())])
+                ->rules(['bail', 'email:rfc,strict,spoof,filter,filter_unicode', new EmailValidation()])
                 ->unique(
                     modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
                         ->withoutTrashed(),
                 ),
 
             DateTimePicker::make('email_verified_at')
+                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.email_verified_at'))
                 ->closeOnDateSelection()
                 ->displayFormat('Y-m-d H:i')
                 ->firstDayOfWeek(6)
+                ->helperText(__('vendra-user::attributes.email_verified_at_helper_text'))
                 ->label(__('vendra-user::attributes.email_verified_at'))
+                ->live()
                 ->maxDate(now())
                 ->native(false)
                 ->seconds(false),
 
             TextInput::make('password')
+                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.password'))
                 ->dehydrated(fn($state): bool => filled($state))
                 ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                 ->extraAttributes(['dir' => 'ltr'])
@@ -79,7 +83,9 @@ final class UserForm
                 ->rule(Password::default()),
 
             Select::make('roles')
+                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.roles'))
                 ->label(__('vendra-permission::navigation.role'))
+                ->live()
                 ->multiple()
                 ->native(false)
                 ->preload()
@@ -87,7 +93,9 @@ final class UserForm
                 ->searchable(),
 
             Select::make('permissions')
+                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.permissions'))
                 ->label(__('vendra-permission::navigation.permission'))
+                ->live()
                 ->multiple()
                 ->native(false)
                 ->preload()
@@ -97,8 +105,10 @@ final class UserForm
 
         if (TagIntegration::isAvailable()) {
             $components[] = SpatieTagsInput::make('tags')
+                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.tags'))
                 ->columnSpanFull()
                 ->label(__('vendra-support::attributes.tags'))
+                ->live()
                 ->type(\Misaf\VendraUser\Models\User::TAG_TYPE);
         }
 
