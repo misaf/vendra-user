@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Filament\Widgets;
 
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -27,10 +28,12 @@ final class LatestUsersWidget extends BaseWidget
             ->query(User::query()->latest()->limit(5))
             ->columns([
                 TextColumn::make('username')
-                    ->label(__('vendra-user::attributes.username')),
+                    ->label(__('vendra-user::attributes.username'))
+                    ->icon(Heroicon::User),
 
                 TextColumn::make('email')
                     ->label(__('vendra-user::attributes.email'))
+                    ->icon(Heroicon::Envelope)
                     ->searchable(),
 
                 TextColumn::make('email_verified_at')

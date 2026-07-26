@@ -36,10 +36,12 @@ final class UserTable
 
             TextColumn::make('username')
                 ->label(__('vendra-user::attributes.username'))
+                ->icon(Heroicon::User)
                 ->searchable(isGlobal: true),
 
             TextColumn::make('email')
                 ->label(__('vendra-user::attributes.email'))
+                ->icon(Heroicon::Envelope)
                 ->searchable(isGlobal: true),
 
             TextColumn::make('roles.name')
