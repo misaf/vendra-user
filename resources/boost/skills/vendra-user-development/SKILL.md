@@ -7,6 +7,13 @@ description: "Create, modify, review, or test the Vendra User package in package
 
 ## Workflow
 
+- Inspect `composer.json`, sibling files, and existing tests before changing the package.
+- Use Laravel Boost `application-info` and `search-docs` before code changes.
+- Apply `laravel-best-practices` to Laravel PHP and `pest-testing` whenever tests change.
+- Apply `tailwindcss-development` only when changing Blade markup or Tailwind classes.
+- Keep changes inside this package's boundary and preserve its public contracts.
+- Add or update focused Pest coverage, then run `composer --working-dir=packages/vendra-user test` and `composer --working-dir=packages/vendra-user analyse`.
+
 ## Translatable Persistence
 
 - Making a persisted model field translatable is an explicit domain choice unless this package already requires it.
@@ -20,10 +27,6 @@ description: "Create, modify, review, or test the Vendra User package in package
 - Apply this only to Vendra platform packages listed under `require`; never extend it to `require-dev`, `suggest`, incidental implementation dependencies, or third-party packages. Removing or replacing an exposed dependency is a breaking change; keep `self.version` alignment across the Vendra package graph.
 
 - Register every table whose migration calls `TenantSchema::addTenantColumn()` with `TenantTableRegistry` in this package's service provider, preserving configured table names and connections, so `vendra-tenant:enable {tenant}` can retrofit schemas migrated before tenancy was enabled.
-
-Always use this skill together with `laravel-best-practices` for Laravel PHP and `pest-testing` when tests are added or changed. Use `tailwindcss-development` only when editing Blade or Tailwind UI.
-
-Before code changes, use Laravel Boost `application-info` and `search-docs` for the relevant packages. Prefer Boost database and browser tools over ad hoc debugging.
 
 ## Module Boundary
 

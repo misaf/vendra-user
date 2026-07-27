@@ -65,6 +65,8 @@ Tagger::findOrCreate('VIP', type: 'user', locale: 'en');
 
 ## Testing
 
+Run the package checks from the package directory:
+
 ```bash
 composer test
 composer analyse

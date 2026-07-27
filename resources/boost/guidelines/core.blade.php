@@ -2,8 +2,6 @@
 
 The `misaf/vendra-user` package owns user management, authentication, media handling, and multi-tenant membership and the Filament admin UI for users. Optional OAuth social login lives in the separate `misaf/vendra-socialite` add-on and must not be re-coupled here.
 
-### Standards
-
 ### Translatable Persistence
 
 - Making a persisted model field translatable is an explicit domain choice unless this package already requires it.
