@@ -20,7 +20,7 @@ it('renders the create user page under strict authorization', function (): void 
 
     livewire(CreateUser::class)
         ->assertOk();
-})->skip('Pre-existing Jalali date picker view error on the DateTimePicker field');
+});
 
 it('renders the list users page under strict authorization', function (): void {
     Filament::getPanel('admin')->strictAuthorization();
@@ -36,7 +36,7 @@ it('renders the edit user page under strict authorization', function (): void {
 
     livewire(EditUser::class, ['record' => $user->getKey()])
         ->assertOk();
-})->skip('Pre-existing Jalali date picker view error');
+});
 
 it('renders the view user page under strict authorization', function (): void {
     Filament::getPanel('admin')->strictAuthorization();
@@ -45,4 +45,4 @@ it('renders the view user page under strict authorization', function (): void {
 
     livewire(ViewUser::class, ['record' => $user->getKey()])
         ->assertOk();
-})->skip('Pre-existing Jalali date picker view error');
+});

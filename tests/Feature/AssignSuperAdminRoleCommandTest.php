@@ -5,6 +5,11 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Config;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Models\User;
+
+use function Pest\Laravel\assertDatabaseHas;
+
+use function Pest\Laravel\assertDatabaseMissing;
+
 use Spatie\Permission\PermissionRegistrar;
 
 it('infers the tenant and assigns the configured role model and role name', function (): void {
@@ -34,12 +39,12 @@ it('infers the tenant and assigns the configured role model and role name', func
         ->expectsOutput("Successfully assigned super-admin role [platform-owner] to user tenant-admin (ID: {$user->getKey()}).")
         ->assertSuccessful();
 
-    $this->assertDatabaseHas('model_has_roles', [
+    assertDatabaseHas('model_has_roles', [
         'role_id'    => $role->getKey(),
         'model_type' => $user->getMorphClass(),
         'model_id'   => $user->getKey(),
     ]);
-    $this->assertDatabaseMissing('model_has_roles', [
+    assertDatabaseMissing('model_has_roles', [
         'role_id'    => $otherRole->getKey(),
         'model_type' => $user->getMorphClass(),
         'model_id'   => $user->getKey(),
@@ -120,7 +125,7 @@ it('uses the user model default guard', function (): void {
         '--tenant' => $tenant->getKey(),
     ])->assertSuccessful();
 
-    $this->assertDatabaseHas('model_has_roles', [
+    assertDatabaseHas('model_has_roles', [
         'role_id'    => $role->getKey(),
         'model_type' => $user->getMorphClass(),
         'model_id'   => $user->getKey(),
