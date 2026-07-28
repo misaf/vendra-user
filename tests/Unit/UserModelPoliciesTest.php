@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Misaf\VendraSupport\Traits\BelongsToTenant;
+use Misaf\VendraSupport\Tenancy\BelongsToTenant;
 use Misaf\VendraUser\Enums\UserPolicyEnum;
 use Misaf\VendraUser\Models\User;
 

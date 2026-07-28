@@ -7,7 +7,7 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas;
 use Filament\Infolists\Components\SpatieTagsEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
-use Misaf\VendraSupport\Support\TagIntegration;
+use Misaf\VendraSupport\Capabilities\TagIntegration;
 use Misaf\VendraUser\Models\User;
 
 final class UserInfolist

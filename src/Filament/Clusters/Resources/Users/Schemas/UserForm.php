@@ -15,9 +15,9 @@ use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 
 use Misaf\LaravelEmailValidation\Rules\EmailValidation;
+use Misaf\VendraSupport\Capabilities\TagIntegration;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
-use Misaf\VendraSupport\Support\TagIntegration;
-use Misaf\VendraSupport\Support\TenantAwareness;
+use Misaf\VendraSupport\Tenancy\TenantAwareness;
 
 final class UserForm
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Seeders;
 
-use Misaf\VendraSupport\Concerns\RequiresCurrentTenant;
-use Misaf\VendraSupport\Database\Seeders\PermissionPolicySeeder as BasePermissionPolicySeeder;
+use Misaf\VendraSupport\Tenancy\Database\Seeders\PermissionPolicySeeder as BasePermissionPolicySeeder;
+use Misaf\VendraSupport\Tenancy\RequiresCurrentTenant;
 use Misaf\VendraUser\Enums\UserPolicyEnum;
 use Misaf\VendraUser\UserPlugin;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Tests\Unit;
 
+use Misaf\VendraSupport\Capabilities\EloquentTagResolver;
 use Misaf\VendraSupport\Contracts\TagResolver;
-use Misaf\VendraSupport\Support\EloquentTagResolver;
 use Misaf\VendraSupport\Support\TagRelationship;
 use Misaf\VendraUser\Models\User;
 
