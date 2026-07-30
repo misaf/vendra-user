@@ -7,7 +7,7 @@ Tenant-aware user management for Vendra applications.
 - User model, authentication fields, and tenant-aware storage
 - Filament user administration on configured panels
 - Role and permission integration through Spatie Permission
-- User creation, super-admin assignment, and permission seeding commands
+- User creation, admin assignment, and permission seeding commands
 - Optional tags resolved through the shared Support capability contract
 
 ## Requirements
@@ -43,11 +43,11 @@ tenant resolver is bound, users are scoped and stamped automatically. If the
 provider is installed after migrations have run, use
 `php artisan vendra-tenant:enable {tenant}`.
 
-Create users, assign the configured super-admin role, or seed module data with:
+Create users, assign the configured admin role, or seed module data with:
 
 ```bash
 php artisan user:create
-php artisan user:assign-super-admin
+php artisan user:assign-admin
 php artisan vendra-user:seed
 ```
 

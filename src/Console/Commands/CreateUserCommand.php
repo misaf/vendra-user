@@ -45,7 +45,7 @@ final class CreateUserCommand extends Command
         $role = $this->requiredInput(
             'role',
             'Role name',
-            Config::string('vendra-permission.super_admin_role', 'super-admin'),
+            Config::string('vendra-permission.admin_role'),
         );
         $guardName = $this->requiredInput('guard', 'Guard name', 'web');
 

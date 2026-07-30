@@ -26,6 +26,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
+use Misaf\VendraPermission\Enums\RoleEnum;
 use Misaf\VendraSupport\Capabilities\HasOptionalTags;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Tenancy\BelongsToTenant;
@@ -95,7 +96,7 @@ final class User extends Authenticatable implements
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($panel->getId()) {
-            'admin' => $this->hasRole('super-admin') || $this->hasRole('admin'),
+            'admin' => $this->hasRole(RoleEnum::Admin),
             default => false,
         };
     }

@@ -13,7 +13,7 @@ use function Pest\Laravel\assertDatabaseMissing;
 use Spatie\Permission\PermissionRegistrar;
 
 it('infers the tenant and assigns the configured role model and role name', function (): void {
-    Config::set('vendra-permission.super_admin_role', 'platform-owner');
+    Config::set('vendra-permission.admin_role', 'platform-owner');
 
     $otherTenant = createTestTenant();
     $tenant = createTestTenant();
@@ -33,10 +33,10 @@ it('infers the tenant and assigns the configured role model and role name', func
         fn(): User => User::factory()->create(['username' => 'tenant-admin']),
     );
 
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id' => $user->getKey(),
     ])
-        ->expectsOutput("Successfully assigned super-admin role [platform-owner] to user tenant-admin (ID: {$user->getKey()}).")
+        ->expectsOutput("Successfully assigned admin role [platform-owner] to user tenant-admin (ID: {$user->getKey()}).")
         ->assertSuccessful();
 
     assertDatabaseHas('model_has_roles', [
@@ -63,10 +63,10 @@ it('does not resolve a user from another tenant', function (): void {
     );
     $tenantResolver->execute(
         $selectedTenant,
-        fn() => $roleClass::create(['name' => 'super-admin', 'guard_name' => 'web']),
+        fn() => $roleClass::create(['name' => 'admin', 'guard_name' => 'web']),
     );
 
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id'  => $user->getKey(),
         '--tenant' => $selectedTenant->getKey(),
     ])
@@ -79,7 +79,7 @@ it('does not resolve a user from another tenant', function (): void {
 it('fails when the user does not exist in the selected tenant', function (): void {
     $tenant = createTestTenant();
 
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id'  => 999,
         '--tenant' => $tenant->getKey(),
     ])
@@ -95,11 +95,11 @@ it('fails when the configured role does not exist for the selected tenant', func
         fn(): User => User::factory()->create(),
     );
 
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id'  => $user->getKey(),
         '--tenant' => $tenant->getKey(),
     ])
-        ->expectsOutput('Super-admin role [super-admin] with guard [web] not found. Please run the PermissionSeeder first.')
+        ->expectsOutput('Admin role [admin] with guard [web] not found. Please run the PermissionSeeder first.')
         ->assertFailed();
 
     expect($user->roles()->count())->toBe(0);
@@ -113,14 +113,14 @@ it('uses the user model default guard', function (): void {
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
     $role = $tenantResolver->execute(
         $tenant,
-        fn() => $roleClass::create(['name' => 'super-admin', 'guard_name' => 'sanctum']),
+        fn() => $roleClass::create(['name' => 'admin', 'guard_name' => 'sanctum']),
     );
     $user = $tenantResolver->execute(
         $tenant,
         fn(): User => User::factory()->create(),
     );
 
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id'  => $user->getKey(),
         '--tenant' => $tenant->getKey(),
     ])->assertSuccessful();
@@ -138,7 +138,7 @@ it('does not duplicate an existing assignment', function (): void {
     $roleClass = app(PermissionRegistrar::class)->getRoleClass();
     $role = $tenantResolver->execute(
         $tenant,
-        fn() => $roleClass::create(['name' => 'super-admin', 'guard_name' => 'web']),
+        fn() => $roleClass::create(['name' => 'admin', 'guard_name' => 'web']),
     );
     $user = $tenantResolver->execute(
         $tenant,
@@ -150,18 +150,18 @@ it('does not duplicate an existing assignment', function (): void {
         },
     );
 
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id'  => $user->getKey(),
         '--tenant' => $tenant->getKey(),
     ])
-        ->expectsOutput("User existing-admin (ID: {$user->getKey()}) already has the super-admin role [super-admin].")
+        ->expectsOutput("User existing-admin (ID: {$user->getKey()}) already has the admin role [admin].")
         ->assertSuccessful();
 
     expect($user->roles()->count())->toBe(1);
 });
 
 it('fails when the selected tenant does not exist', function (): void {
-    $this->artisan('user:assign-super-admin', [
+    $this->artisan('user:assign-admin', [
         'user_id'  => 1,
         '--tenant' => 999,
     ])

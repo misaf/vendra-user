@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Gate;
 use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
 use Misaf\VendraSupport\Tenancy\TenantSeeders;
 use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
-use Misaf\VendraUser\Console\Commands\AssignSuperAdminRoleCommand;
+use Misaf\VendraUser\Console\Commands\AssignAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
 use Misaf\VendraUser\Console\Commands\SeedCommand;
 use Misaf\VendraUser\Models\User;
@@ -36,7 +36,7 @@ final class UserServiceProvider extends PackageServiceProvider
                 'create_users_table',
             ])
             ->hasCommands(
-                AssignSuperAdminRoleCommand::class,
+                AssignAdminRoleCommand::class,
                 CreateUserCommand::class,
                 SeedCommand::class,
             )
@@ -64,7 +64,7 @@ final class UserServiceProvider extends PackageServiceProvider
         AboutCommand::add('Vendra User', fn(): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
 
         Gate::after(function (User $user): ?true {
-            return $user->hasRole(Config::string('vendra-permission.super_admin_role', 'superadmin')) ? true : null;
+            return $user->hasRole(Config::string('vendra-permission.admin_role')) ? true : null;
         });
     }
 }

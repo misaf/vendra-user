@@ -12,7 +12,7 @@ use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ViewUser;
 use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
-    setUpFilamentSuperAdminTestContext();
+    setUpFilamentAdminTestContext();
 });
 
 it('renders the create user page under strict authorization', function (): void {

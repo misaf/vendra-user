@@ -10,7 +10,7 @@ use Misaf\VendraUser\Models\User;
 use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
-    $this->tenant = setUpFilamentSuperAdminTestContext();
+    $this->tenant = setUpFilamentAdminTestContext();
 });
 
 it('rejects a duplicate username within the current tenant', function (): void {

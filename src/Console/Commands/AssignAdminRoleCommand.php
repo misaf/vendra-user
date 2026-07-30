@@ -17,13 +17,13 @@ use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\Guard;
 use Spatie\Permission\PermissionRegistrar;
 
-final class AssignSuperAdminRoleCommand extends Command implements PromptsForMissingInput
+final class AssignAdminRoleCommand extends Command implements PromptsForMissingInput
 {
-    protected $signature = 'user:assign-super-admin
-        {user_id=1 : The ID of the user to assign the super-admin role to}
+    protected $signature = 'user:assign-admin
+        {user_id=1 : The ID of the user to assign the admin role to}
         {--tenant= : Optional tenant ID or slug; inferred from the user when omitted}';
 
-    protected $description = 'Assign the super-admin role to a specific user';
+    protected $description = 'Assign the admin role to a specific user';
 
     public function handle(): int
     {
@@ -31,7 +31,7 @@ final class AssignSuperAdminRoleCommand extends Command implements PromptsForMis
         $tenantResolver = app(TenantResolver::class);
 
         if ( ! $tenantResolver->available()) {
-            return $this->assignSuperAdminRole($userId);
+            return $this->assignAdminRole($userId);
         }
 
         $tenantIdentifier = (string) $this->option('tenant');
@@ -60,7 +60,7 @@ final class AssignSuperAdminRoleCommand extends Command implements PromptsForMis
 
         $exitCode = $tenantResolver->execute(
             $tenant,
-            fn(): int => $this->assignSuperAdminRole($userId),
+            fn(): int => $this->assignAdminRole($userId),
         );
 
         if ( ! is_int($exitCode)) {
@@ -70,9 +70,9 @@ final class AssignSuperAdminRoleCommand extends Command implements PromptsForMis
         return $exitCode;
     }
 
-    private function assignSuperAdminRole(int $userId): int
+    private function assignAdminRole(int $userId): int
     {
-        $roleName = Config::string('vendra-permission.super_admin_role', 'super-admin');
+        $roleName = Config::string('vendra-permission.admin_role');
 
         $user = User::query()->find($userId);
 
@@ -85,22 +85,22 @@ final class AssignSuperAdminRoleCommand extends Command implements PromptsForMis
         $guardName = Guard::getDefaultName($user);
 
         try {
-            $superAdminRole = $this->roleModelClass()::findByName($roleName, $guardName);
+            $adminRole = $this->roleModelClass()::findByName($roleName, $guardName);
         } catch (RoleDoesNotExist) {
-            $this->error("Super-admin role [{$roleName}] with guard [{$guardName}] not found. Please run the PermissionSeeder first.");
+            $this->error("Admin role [{$roleName}] with guard [{$guardName}] not found. Please run the PermissionSeeder first.");
 
             return self::FAILURE;
         }
 
-        if ($user->hasRole($superAdminRole)) {
-            $this->info("User {$user->username} (ID: {$userId}) already has the super-admin role [{$roleName}].");
+        if ($user->hasRole($adminRole)) {
+            $this->info("User {$user->username} (ID: {$userId}) already has the admin role [{$roleName}].");
 
             return self::SUCCESS;
         }
 
-        $user->assignRole($superAdminRole);
+        $user->assignRole($adminRole);
 
-        $this->info("Successfully assigned super-admin role [{$roleName}] to user {$user->username} (ID: {$userId}).");
+        $this->info("Successfully assigned admin role [{$roleName}] to user {$user->username} (ID: {$userId}).");
 
         return self::SUCCESS;
     }

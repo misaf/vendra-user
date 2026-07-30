@@ -8,7 +8,7 @@ use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\ListUsers;
 use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
-    setUpFilamentSuperAdminTestContext();
+    setUpFilamentAdminTestContext();
 });
 
 it('sorts the users table by every sortable column following the stored values', function (): void {
