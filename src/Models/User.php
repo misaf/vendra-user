@@ -133,12 +133,18 @@ final class User extends Authenticatable implements
     }
 
     /**
+     * The tenants this user may sign into.
+     *
+     * The pivot is inferred from the configured tenant model rather than named,
+     * so a Store tenant joins through `store_user` and a Company tenant through
+     * `company_user` without this package knowing either.
+     *
      * @return BelongsToMany<Model, $this>
      */
     public function tenants(): BelongsToMany
     {
         return $this
-            ->belongsToMany($this->tenantModelClass(), 'tenant_user', 'user_id', 'tenant_id')
+            ->belongsToMany($this->tenantModelClass())
             ->withTimestamps();
     }
 

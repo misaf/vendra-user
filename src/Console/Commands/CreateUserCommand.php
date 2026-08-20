@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Misaf\VendraSupport\Contracts\TenantResolver;
+use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Models\User;
 use Spatie\Permission\Contracts\Role;
@@ -61,7 +62,7 @@ final class CreateUserCommand extends Command
 
         if (
             User::query()
-                ->where('tenant_id', $tenant->getKey())
+                ->where(TenantSchema::column(), $tenant->getKey())
                 ->where('username', $username)
                 ->exists()
         ) {
