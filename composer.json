@@ -17,7 +17,7 @@
     ],
     "type": "vendra-module",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "laravel/pennant": "^1.24",
         "misaf/filament-jalali": "^5.1.4",
         "misaf/laravel-email-validation": "^1.0",
@@ -26,22 +26,6 @@
         "misaf/vendra-support": "self.version",
         "spatie/laravel-package-tools": "^1.93.1",
         "staudenmeir/belongs-to-through": "^2.18"
-    },
-    "require-dev": {
-        "fakerphp/faker": "^1.24.1",
-        "larastan/larastan": "^3.10.0",
-        "laravel/boost": "^2.4.12",
-        "laravel/pint": "^1.29.3",
-        "misaf/vendra-testing": "self.version",
-        "mockery/mockery": "^1.6.12",
-        "nunomaduro/collision": "^8.9.4",
-        "orchestra/testbench": "^11.1",
-        "pestphp/pest": "^5.0",
-        "pestphp/pest-plugin-arch": "^5.0",
-        "pestphp/pest-plugin-laravel": "^5.0",
-        "pestphp/pest-plugin-profanity": "^5.0",
-        "pestphp/pest-plugin-type-coverage": "^5.0",
-        "phpstan/extension-installer": "^1.4.3"
     },
     "autoload": {
         "psr-4": {
@@ -61,12 +45,6 @@
                 "Misaf\\VendraUser\\Providers\\UserServiceProvider"
             ]
         }
-    },
-    "scripts": {
-        "analyse": "vendor/bin/phpstan analyse",
-        "format": "vendor/bin/pint",
-        "test": "vendor/bin/pest --parallel",
-        "test-coverage": "vendor/bin/pest --coverage"
     },
     "suggest": {
         "misaf/vendra-tagger": "Install this in the host application to assign typed tags to users."

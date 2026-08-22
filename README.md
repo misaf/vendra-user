@@ -12,7 +12,7 @@ Tenant-aware user management for Vendra applications.
 
 ## Requirements
 
-- PHP 8.3+
+- PHP 8.4+
 - Laravel 13
 - Filament 5
 - `misaf/vendra-multimedia`
@@ -65,11 +65,11 @@ Tagger::findOrCreate('VIP', type: 'user', locale: 'en');
 
 ## Testing
 
-Run the package checks from the package directory:
+Run the package checks from the project root:
 
 ```bash
-composer test
-composer analyse
+php artisan test --compact --testsuite=vendra-user
+composer stan
 ```
 
 ## License
