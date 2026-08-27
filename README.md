@@ -9,6 +9,7 @@ Tenant-aware user management for Vendra applications.
 - Role and permission integration through Spatie Permission
 - User creation, admin assignment, and permission seeding commands
 - Optional tags resolved through the shared Support capability contract
+- Domain actions for tenant administrator membership and credential/account changes
 
 ## Requirements
 
@@ -50,6 +51,16 @@ php artisan user:create
 php artisan user:assign-admin
 php artisan vendra-user:seed
 ```
+
+## Administrator operations
+
+Use `AddTenantAdministratorAction`, `PromoteTenantAdministratorAction`,
+`DemoteTenantAdministratorAction`, `RemoveTenantAdministratorAction`, and
+`SetUserAccountEnabledAction` for tenant membership changes. These actions lock
+the tenant membership boundary and prevent the final enabled administrator from
+being removed, demoted, or disabled. `UpdateUserEmailAction` and
+`UpdateUserPasswordAction` provide normalized/validated credential changes,
+framework hashing, and remember-token rotation without exposing stored hashes.
 
 ## Optional tags
 

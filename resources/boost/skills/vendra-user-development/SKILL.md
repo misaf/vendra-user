@@ -46,6 +46,7 @@ Follow the existing `User` model patterns for new user entities. Social login (t
 - Follow Laravel comment style: document with PHPDoc (array shapes, generics, `@see`) and reserve inline comments for genuinely complex logic. Match the surrounding file's density and do not add comments that restate the code.
 - Prefer only the Laravel attributes already used by the affected sibling model; do not add model attributes merely because another package uses them.
 - The `User` model owns Filament tenant membership (`HasTenants`, `teams()` / `tenants()`) but resolves the tenant model through support-layer `BelongsToTenant`. Never reference the concrete `Misaf\VendraTenant` provider.
+- Administrator membership changes use the add/promote/demote/remove/account-enabled actions and `Support\TenantAdministratorGuard`, which locks the tenant boundary and protects the final enabled administrator. Email/password changes use the package actions so validation, hashing, and token rotation stay out of panels.
 - Derive all tenant awareness from the support layer (`TenantAwareness`, `BelongsToTenant`) and let the trait handle ordinary model creation.
 - Reuse only the traits and conventions present on the affected sibling model; do not infer translations, media, slugs, sorting, or soft deletes from another package.
 
