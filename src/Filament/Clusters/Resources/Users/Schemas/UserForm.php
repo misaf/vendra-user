@@ -14,7 +14,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 
-use Misaf\LaravelEmailValidation\Rules\EmailValidation;
+use Misaf\LaravelEmailVerification\Rules\EmailValidation;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
 use Misaf\VendraSupport\Tenancy\TenantAwareness;
