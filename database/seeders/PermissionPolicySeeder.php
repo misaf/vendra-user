@@ -29,5 +29,4 @@ final class PermissionPolicySeeder extends BasePermissionPolicySeeder
     {
         return array_column(UserPolicyEnum::cases(), 'value');
     }
-
 }

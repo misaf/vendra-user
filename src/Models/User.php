@@ -52,28 +52,22 @@ use Spatie\Permission\Traits\HasRoles;
 #[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
 #[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard'])]
 #[UseFactory(UserFactory::class)]
-final class User extends Authenticatable implements
-    FilamentUser,
-    HasLocalePreference,
-    HasName,
-    MustVerifyEmail,
-    HasTenants,
-    HasMedia,
-    ShouldLogActivity
+final class User extends Authenticatable implements FilamentUser, HasLocalePreference, HasMedia, HasName, HasTenants, MustVerifyEmail, ShouldLogActivity
 {
     use BelongsToTenant;
-
     use HasDefaultMediaConversions, InteractsWithMedia {
         HasDefaultMediaConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasFeatures;
     use HasOptionalTags;
     use HasRoles;
     use Notifiable;
     use SoftDeletes;
+
     public const string TAG_TYPE = 'user';
 
     /**
@@ -82,14 +76,14 @@ final class User extends Authenticatable implements
     protected function casts(): array
     {
         return [
-            'id'                   => 'integer',
-            'tenant_id'            => 'integer',
-            'username'             => 'string',
-            'email'                => 'string',
-            'email_verified_at'    => 'datetime',
-            'password'             => 'string',
+            'id' => 'integer',
+            'tenant_id' => 'integer',
+            'username' => 'string',
+            'email' => 'string',
+            'email_verified_at' => 'datetime',
+            'password' => 'string',
             'password_fingerprint' => 'string',
-            'remember_token'       => 'string',
+            'remember_token' => 'string',
         ];
     }
 
@@ -154,7 +148,7 @@ final class User extends Authenticatable implements
     protected function email(): Attribute
     {
         return Attribute::make(
-            set: fn(string $value) => Str::lower(mb_trim($value)),
+            set: fn (string $value) => Str::lower(mb_trim($value)),
         );
     }
 
@@ -175,5 +169,4 @@ final class User extends Authenticatable implements
     {
         return self::TAG_TYPE;
     }
-
 }

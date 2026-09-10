@@ -20,6 +20,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
+use Misaf\VendraUser\Models\User;
 
 final class UserTable
 {
@@ -58,8 +59,8 @@ final class UserTable
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->when(
                     app()->isLocale('fa'),
-                    fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                    fn(TextColumn $column) => $column->dateTime('Y-m-d H:i'),
+                    fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
+                    fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
                 ),
 
             TextColumn::make('created_at')
@@ -68,8 +69,8 @@ final class UserTable
                 ->sinceTooltip()
                 ->when(
                     app()->isLocale('fa'),
-                    fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                    fn(TextColumn $column) => $column->dateTime('Y-m-d H:i'),
+                    fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
+                    fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
                 ),
 
             TextColumn::make('updated_at')
@@ -78,15 +79,15 @@ final class UserTable
                 ->sinceTooltip()
                 ->when(
                     app()->isLocale('fa'),
-                    fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                    fn(TextColumn $column) => $column->dateTime('Y-m-d H:i'),
+                    fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
+                    fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
                 ),
         ];
 
         if (TagIntegration::isAvailable()) {
             $columns[] = SpatieTagsColumn::make('tags')
                 ->label(__('vendra-support::attributes.tags'))
-                ->type(\Misaf\VendraUser\Models\User::TAG_TYPE)
+                ->type(User::TAG_TYPE)
                 ->toggleable();
         }
 
@@ -127,6 +128,4 @@ final class UserTable
             ])
             ->defaultSort(column: 'id', direction: 'desc');
     }
-
-
 }

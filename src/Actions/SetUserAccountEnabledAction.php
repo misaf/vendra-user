@@ -15,7 +15,7 @@ final class SetUserAccountEnabledAction
 
     public function execute(Model $tenant, User $user, bool $enabled): User
     {
-        return DB::transaction(fn(): User => $this->guard->execute($tenant, function () use ($tenant, $user, $enabled): User {
+        return DB::transaction(fn (): User => $this->guard->execute($tenant, function () use ($tenant, $user, $enabled): User {
             $lockedUser = User::query()
                 ->withTrashed()
                 ->whereKey($user->getKey())
@@ -30,7 +30,7 @@ final class SetUserAccountEnabledAction
                 return $lockedUser->refresh();
             }
 
-            if ( ! $lockedUser->trashed()) {
+            if (! $lockedUser->trashed()) {
                 $this->guard->assertMayRemoveAdministrator($lockedUser, $tenant);
                 $lockedUser->delete();
             }

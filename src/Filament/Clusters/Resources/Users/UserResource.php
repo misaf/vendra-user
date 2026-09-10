@@ -29,7 +29,6 @@ use Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas\UserForm;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas\UserInfolist;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Tables\UserTable;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Widgets\UserOverviewWidget;
-
 use Misaf\VendraUser\Models\User;
 
 final class UserResource extends Resource
@@ -100,7 +99,7 @@ final class UserResource extends Resource
         $user = self::user($record);
 
         return [
-            __('vendra-user::attributes.email')      => $user->email,
+            __('vendra-user::attributes.email') => $user->email,
             __('vendra-permission::navigation.role') => Arr::join(
                 $user->roles->pluck('name')->all(),
                 ', ',
@@ -114,10 +113,10 @@ final class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListUsers::route('/'),
+            'index' => ListUsers::route('/'),
             'create' => CreateUser::route('/create'),
-            'view'   => ViewUser::route('/{record}'),
-            'edit'   => EditUser::route('/{record}/edit'),
+            'view' => ViewUser::route('/{record}'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 
@@ -153,7 +152,7 @@ final class UserResource extends Resource
 
     private static function user(Model $record): User
     {
-        if ( ! $record instanceof User) {
+        if (! $record instanceof User) {
             throw new InvalidArgumentException('User resources require a User record.');
         }
 

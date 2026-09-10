@@ -36,7 +36,7 @@ final class CreateUserCommand extends Command
     {
         $tenant = $this->resolveTenant();
 
-        if ( ! $tenant) {
+        if (! $tenant) {
             return self::FAILURE;
         }
 
@@ -50,7 +50,7 @@ final class CreateUserCommand extends Command
         );
         $guardName = $this->requiredInput('guard', 'Guard name', 'web');
 
-        if (null === $username || null === $email || null === $password || null === $role || null === $guardName) {
+        if ($username === null || $email === null || $password === null || $role === null || $guardName === null) {
             return self::FAILURE;
         }
 
@@ -75,7 +75,7 @@ final class CreateUserCommand extends Command
             /** @var Role $resolvedRole */
             $resolvedRole = app(TenantResolver::class)->execute(
                 $tenant,
-                fn(): Role => $this->roleModelClass()::findByName($role, $guardName),
+                fn (): Role => $this->roleModelClass()::findByName($role, $guardName),
             );
 
             $user = $this->createUserAction->execute(
@@ -101,7 +101,7 @@ final class CreateUserCommand extends Command
         $tenantId = (int) $this->option('tenant');
         $tenant = app(TenantResolver::class)->findByKeyOrSlug($tenantId);
 
-        if ( ! $tenant) {
+        if (! $tenant) {
             $this->error("Tenant with ID [{$tenantId}] not found.");
 
             return null;
@@ -122,11 +122,11 @@ final class CreateUserCommand extends Command
     {
         $value = $this->option($option);
 
-        if (is_string($value) && '' !== $value) {
+        if (is_string($value) && $value !== '') {
             return $value;
         }
 
-        if ( ! $this->input->isInteractive()) {
+        if (! $this->input->isInteractive()) {
             $this->error("The --{$option} option is required.");
 
             return null;
@@ -136,6 +136,6 @@ final class CreateUserCommand extends Command
             ? $this->secret($label)
             : $this->ask($label, $default);
 
-        return is_string($answer) && '' !== $answer ? $answer : null;
+        return is_string($answer) && $answer !== '' ? $answer : null;
     }
 }

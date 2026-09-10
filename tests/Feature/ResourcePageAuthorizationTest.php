@@ -56,7 +56,7 @@ it('globally searches user identifiers with roles inside the current tenant', fu
     ]);
     $user = UserFactory::new()->forTenant($tenant)->createOne([
         'username' => 'global-search-user',
-        'email'    => 'global-search-user@example.test',
+        'email' => 'global-search-user@example.test',
     ]);
     $user->assignRole($role);
 
@@ -65,7 +65,7 @@ it('globally searches user identifiers with roles inside the current tenant', fu
     switchToTestTenant($otherTenant);
     UserFactory::new()->createOne([
         'username' => 'other-tenant-user',
-        'email'    => 'other-tenant-user@example.test',
+        'email' => 'other-tenant-user@example.test',
     ]);
     Filament::setTenant($tenant);
     switchToTestTenant($tenant);
@@ -80,8 +80,8 @@ it('globally searches user identifiers with roles inside the current tenant', fu
         ])
         ->and($result->title)->toBe('global-search-user')
         ->and($result->details)->toBe([
-            __('vendra-user::attributes.email')       => 'global-search-user@example.test',
-            __('vendra-permission::navigation.role')  => 'support-agent',
+            __('vendra-user::attributes.email') => 'global-search-user@example.test',
+            __('vendra-permission::navigation.role') => 'support-agent',
         ])
         ->and($loadedUser->relationLoaded('roles'))->toBeTrue()
         ->and(UserResource::getGlobalSearchResults('other-tenant-user'))->toBeEmpty();

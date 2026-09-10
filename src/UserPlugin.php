@@ -30,11 +30,11 @@ final class UserPlugin implements Plugin
     {
         $panel
             ->discoverResources(
-                in: __DIR__ . '/Filament/Clusters/Resources',
+                in: __DIR__.'/Filament/Clusters/Resources',
                 for: 'Misaf\\VendraUser\\Filament\\Clusters\\Resources',
             )
             ->discoverWidgets(
-                in: __DIR__ . '/Filament/Widgets',
+                in: __DIR__.'/Filament/Widgets',
                 for: 'Misaf\\VendraUser\\Filament\\Widgets',
             );
     }

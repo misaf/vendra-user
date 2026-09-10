@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
-
 use Misaf\LaravelEmailVerification\Rules\EmailValidation;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
 use Misaf\VendraSupport\Tenancy\TenantAwareness;
+use Misaf\VendraUser\Models\User;
 
 final class UserForm
 {
@@ -25,9 +25,9 @@ final class UserForm
     {
         $components = [
             TextInput::make('username')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.username'))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.username'))
                 ->autofocus()
-                ->dehydrated(fn(string $operation): bool => 'create' === $operation)
+                ->dehydrated(fn (string $operation): bool => $operation === 'create')
                 ->disabledOn('edit')
                 ->extraAttributes(['dir' => 'ltr'])
                 ->helperText(__('vendra-user::forms.username_helper_text'))
@@ -38,12 +38,12 @@ final class UserForm
                 ->required()
                 ->rules(['alpha_dash'])
                 ->unique(
-                    modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
+                    modifyRuleUsing: fn (Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
                         ->withoutTrashed(),
                 ),
 
             TextInput::make('email')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.email'))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.email'))
                 ->columnSpan(['lg' => 2])
                 ->email()
                 ->extraAttributes(['dir' => 'ltr'])
@@ -51,14 +51,14 @@ final class UserForm
                 ->live(onBlur: true)
                 ->maxLength(255)
                 ->required()
-                ->rules(['bail', 'email:rfc,strict,spoof,filter,filter_unicode', new EmailValidation()])
+                ->rules(['bail', 'email:rfc,strict,spoof,filter,filter_unicode', new EmailValidation])
                 ->unique(
-                    modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
+                    modifyRuleUsing: fn (Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
                         ->withoutTrashed(),
                 ),
 
             DateTimePicker::make('email_verified_at')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.email_verified_at'))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.email_verified_at'))
                 ->closeOnDateSelection()
                 ->displayFormat('Y-m-d H:i')
                 ->firstDayOfWeek(6)
@@ -70,20 +70,20 @@ final class UserForm
                 ->seconds(false),
 
             TextInput::make('password')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.password'))
-                ->dehydrated(fn($state): bool => filled($state))
-                ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.password'))
+                ->dehydrated(fn ($state): bool => filled($state))
+                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                 ->extraAttributes(['dir' => 'ltr'])
                 ->hintAction(GeneratePasswordAction::make())
                 ->label(__('vendra-user::attributes.password'))
                 ->live(debounce: 500)
                 ->password()
-                ->required(fn(string $operation): bool => 'create' === $operation)
+                ->required(fn (string $operation): bool => $operation === 'create')
                 ->revealable(filament()->arePasswordsRevealable())
                 ->rule(Password::default()),
 
             Select::make('roles')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.roles'))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.roles'))
                 ->label(__('vendra-permission::navigation.role'))
                 ->live()
                 ->multiple()
@@ -93,7 +93,7 @@ final class UserForm
                 ->searchable(),
 
             Select::make('permissions')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.permissions'))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.permissions'))
                 ->label(__('vendra-permission::navigation.permission'))
                 ->live()
                 ->multiple()
@@ -105,15 +105,14 @@ final class UserForm
 
         if (TagIntegration::isAvailable()) {
             $components[] = SpatieTagsInput::make('tags')
-                ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.tags'))
+                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.tags'))
                 ->columnSpanFull()
                 ->label(__('vendra-support::attributes.tags'))
                 ->live()
-                ->type(\Misaf\VendraUser\Models\User::TAG_TYPE);
+                ->type(User::TAG_TYPE);
         }
 
         return $schema
             ->components($components);
     }
-
 }

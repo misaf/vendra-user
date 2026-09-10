@@ -19,7 +19,7 @@ final class UpdateUserEmailAction
     {
         $tenant = $user->tenant()->firstOrFail();
 
-        return $this->tenantResolver->execute($tenant, fn(): User => DB::transaction(function () use ($user, $email, $verified, $tenant): User {
+        return $this->tenantResolver->execute($tenant, fn (): User => DB::transaction(function () use ($user, $email, $verified, $tenant): User {
             $lockedUser = User::query()->whereKey($user->getKey())->lockForUpdate()->firstOrFail();
 
             Validator::make(['email' => $email], [
@@ -33,7 +33,7 @@ final class UpdateUserEmailAction
             ])->validate();
 
             $lockedUser->forceFill([
-                'email'             => $email,
+                'email' => $email,
                 'email_verified_at' => $verified ? now() : null,
             ])->save();
 

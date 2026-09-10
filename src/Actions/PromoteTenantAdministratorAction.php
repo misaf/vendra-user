@@ -15,7 +15,7 @@ final class PromoteTenantAdministratorAction
 
     public function execute(Model $tenant, User $user): User
     {
-        return DB::transaction(fn(): User => $this->guard->execute($tenant, function () use ($tenant, $user): User {
+        return DB::transaction(fn (): User => $this->guard->execute($tenant, function () use ($tenant, $user): User {
             $this->guard->assertBelongsToTenant($user, $tenant);
 
             $user->tenants()->syncWithoutDetaching([$tenant->getKey()]);

@@ -36,12 +36,12 @@ final class TenantAdministratorGuard
 
     public function assertMayRemoveAdministrator(User $user, Model $tenant): void
     {
-        if ( ! $user->hasRole($this->roleName())) {
+        if (! $user->hasRole($this->roleName())) {
             return;
         }
 
         $administratorCount = User::query()
-            ->whereHas('tenants', fn($query) => $query->whereKey($tenant->getKey()))
+            ->whereHas('tenants', fn ($query) => $query->whereKey($tenant->getKey()))
             ->role($this->roleName())
             ->lockForUpdate()
             ->count();

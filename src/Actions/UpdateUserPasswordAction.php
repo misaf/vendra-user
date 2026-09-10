@@ -18,11 +18,11 @@ final class UpdateUserPasswordAction
     {
         $tenant = $user->tenant()->firstOrFail();
 
-        return $this->tenantResolver->execute($tenant, fn(): User => DB::transaction(function () use ($user, $password): User {
+        return $this->tenantResolver->execute($tenant, fn (): User => DB::transaction(function () use ($user, $password): User {
             $lockedUser = User::query()->whereKey($user->getKey())->lockForUpdate()->firstOrFail();
 
             $lockedUser->forceFill([
-                'password'       => Hash::make($password),
+                'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
             ])->save();
 

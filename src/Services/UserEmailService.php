@@ -12,11 +12,11 @@ final class UserEmailService
 {
     public function getEmailDomain(User $user): ?string
     {
-        if ( ! $user->email) {
+        if (! $user->email) {
             return null;
         }
 
-        if ( ! Str::contains($user->email, '@')) {
+        if (! Str::contains($user->email, '@')) {
             return null;
         }
 
@@ -25,7 +25,7 @@ final class UserEmailService
 
     public function isEmailVerified(User $user): bool
     {
-        return null !== $user->email_verified_at;
+        return $user->email_verified_at !== null;
     }
 
     public function getEmailVerificationStatus(User $user): string
@@ -44,8 +44,6 @@ final class UserEmailService
 
     /**
      * Get email domain statistics
-     *
-     * @return array
      */
     public function getDomainStatistics(): array
     {

@@ -19,7 +19,7 @@ it('rejects a duplicate username within the current tenant', function (): void {
     livewire(CreateUser::class)
         ->fillForm([
             'username' => 'demo-user',
-            'email'    => 'demo-user@gmail.com',
+            'email' => 'demo-user@gmail.com',
             'password' => 'secret-password',
         ])
         ->call('create')
@@ -47,7 +47,7 @@ it('allows the same username in another tenant', function (): void {
     livewire(CreateUser::class)
         ->fillForm([
             'username' => 'demo-user',
-            'email'    => 'demo-user@gmail.com',
+            'email' => 'demo-user@gmail.com',
             'password' => 'secret-password',
         ])
         ->call('create')

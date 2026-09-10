@@ -30,18 +30,18 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
         $userId = (int) $this->argument('user_id');
         $tenantResolver = app(TenantResolver::class);
 
-        if ( ! $tenantResolver->available()) {
+        if (! $tenantResolver->available()) {
             return $this->assignAdminRole($userId);
         }
 
         $tenantIdentifier = (string) $this->option('tenant');
 
-        if ('' === $tenantIdentifier) {
+        if ($tenantIdentifier === '') {
             $user = User::query()
                 ->withoutGlobalScopes([TenantScope::class, TeamScope::class])
                 ->find($userId);
 
-            if ( ! $user) {
+            if (! $user) {
                 $this->error("User with ID {$userId} not found.");
 
                 return self::FAILURE;
@@ -52,7 +52,7 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
 
         $tenant = $tenantResolver->findByKeyOrSlug($tenantIdentifier);
 
-        if ( ! $tenant) {
+        if (! $tenant) {
             $this->error("Tenant [{$tenantIdentifier}] not found.");
 
             return self::FAILURE;
@@ -60,10 +60,10 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
 
         $exitCode = $tenantResolver->execute(
             $tenant,
-            fn(): int => $this->assignAdminRole($userId),
+            fn (): int => $this->assignAdminRole($userId),
         );
 
-        if ( ! is_int($exitCode)) {
+        if (! is_int($exitCode)) {
             throw new LogicException('The tenant resolver returned an invalid command exit code.');
         }
 
@@ -76,7 +76,7 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
 
         $user = User::query()->find($userId);
 
-        if ( ! $user) {
+        if (! $user) {
             $this->error("User with ID {$userId} not found.");
 
             return self::FAILURE;
@@ -112,7 +112,7 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
     {
         $roleModelClass = app(PermissionRegistrar::class)->getRoleClass();
 
-        if ( ! is_a($roleModelClass, Role::class, true)) {
+        if (! is_a($roleModelClass, Role::class, true)) {
             throw new LogicException("The configured role model [{$roleModelClass}] must implement the role contract.");
         }
 

@@ -15,7 +15,7 @@ final class RemoveTenantAdministratorAction
 
     public function execute(Model $tenant, User $user): void
     {
-        DB::transaction(fn(): mixed => $this->guard->execute($tenant, function () use ($tenant, $user): void {
+        DB::transaction(fn (): mixed => $this->guard->execute($tenant, function () use ($tenant, $user): void {
             $this->guard->assertBelongsToTenant($user, $tenant);
             $this->guard->assertMayRemoveAdministrator($user, $tenant);
 

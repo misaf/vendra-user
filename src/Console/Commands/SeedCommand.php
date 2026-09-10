@@ -13,7 +13,7 @@ final class SeedCommand extends TenantSeedCommand
 {
     protected const string MODULE_NAME = UserPlugin::ID;
 
-    protected $signature = self::MODULE_NAME . ':seed
+    protected $signature = self::MODULE_NAME.':seed
         {tenant : Tenant ID or slug to seed user data for}
         {seeders?* : Seeder keys to run. Use "all" or one or more of: permission-policies, demo-contents}';
 
@@ -26,7 +26,7 @@ final class SeedCommand extends TenantSeedCommand
     {
         return [
             'permission-policies' => PermissionPolicySeeder::class,
-            'demo-contents'       => DemoContentSeeder::class,
+            'demo-contents' => DemoContentSeeder::class,
         ];
     }
 }

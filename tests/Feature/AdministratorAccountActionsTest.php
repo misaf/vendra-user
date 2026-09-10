@@ -23,8 +23,8 @@ function prepareAdministratorRole(Model $tenant): void
 
     app(TenantResolver::class)->execute(
         $tenant,
-        fn(): mixed => $roleClass::query()->firstOrCreate([
-            'name'       => Config::string('vendra-permission.admin_role'),
+        fn (): mixed => $roleClass::query()->firstOrCreate([
+            'name' => Config::string('vendra-permission.admin_role'),
             'guard_name' => 'web',
         ]),
     );
@@ -79,11 +79,11 @@ it('prevents the last enabled administrator from being demoted removed or disabl
         'SecurePassword123',
     );
 
-    expect(fn() => app(DemoteTenantAdministratorAction::class)->execute($tenant, $administrator))
+    expect(fn () => app(DemoteTenantAdministratorAction::class)->execute($tenant, $administrator))
         ->toThrow(LastAdministratorException::class)
-        ->and(fn() => app(RemoveTenantAdministratorAction::class)->execute($tenant, $administrator))
+        ->and(fn () => app(RemoveTenantAdministratorAction::class)->execute($tenant, $administrator))
         ->toThrow(LastAdministratorException::class)
-        ->and(fn() => app(SetUserAccountEnabledAction::class)->execute($tenant, $administrator, false))
+        ->and(fn () => app(SetUserAccountEnabledAction::class)->execute($tenant, $administrator, false))
         ->toThrow(LastAdministratorException::class);
 });
 

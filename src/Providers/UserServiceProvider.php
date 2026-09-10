@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Misaf\VendraUser\Providers;
 
 use Composer\InstalledVersions;
-
 use Filament\Panel;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Console\AboutCommand;
@@ -49,7 +48,7 @@ final class UserServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         Panel::configureUsing(function (Panel $panel): void {
-            if ( ! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-user')) {
+            if (! $this->shouldRegisterOnPanel($panel->getId(), 'vendra-user')) {
                 return;
             }
 
@@ -62,7 +61,7 @@ final class UserServiceProvider extends PackageServiceProvider
         $this->app->make(TenantTableRegistry::class)->register('users');
         $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
 
-        AboutCommand::add('Vendra User', fn(): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
+        AboutCommand::add('Vendra User', fn (): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
 
         /*
          | Gate::after runs for whoever is checking, not only for this package's
@@ -72,7 +71,7 @@ final class UserServiceProvider extends PackageServiceProvider
          | let anyone who is not this package's user fall through.
          */
         Gate::after(function (Authenticatable $user): ?true {
-            if ( ! $user instanceof User) {
+            if (! $user instanceof User) {
                 return null;
             }
 

@@ -22,11 +22,11 @@ final class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'username'          => fake()->userName(),
-            'email'             => fake()->unique()->email(),
+            'username' => fake()->userName(),
+            'email' => fake()->unique()->email(),
             'email_verified_at' => Carbon::now(),
-            'password'          => Hash::make('password'),
-            'remember_token'    => Str::random(10),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
         ];
     }
 
@@ -35,11 +35,11 @@ final class UserFactory extends Factory
      */
     public function forTenant(Model|int $tenant): static
     {
-        if ( ! TenantAwareness::enabled()) {
+        if (! TenantAwareness::enabled()) {
             return $this;
         }
 
-        return $this->state(fn(): array => [
+        return $this->state(fn (): array => [
             'tenant_id' => $tenant instanceof Model ? $tenant->getKey() : $tenant,
         ]);
     }
@@ -53,7 +53,7 @@ final class UserFactory extends Factory
 
     public function unverified(): static
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'email_verified_at' => null,
         ]);
     }

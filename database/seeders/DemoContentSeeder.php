@@ -26,7 +26,7 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
     }
 
     /**
-     * @param list<array<string, mixed>> $records
+     * @param  list<array<string, mixed>>  $records
      */
     protected function seedFixtures(array $records): void
     {
@@ -51,7 +51,7 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
     }
 
     /**
-     * @param array<string, mixed> $record
+     * @param  array<string, mixed>  $record
      */
     protected function seedFixtureRecord(Model $tenant, array $record): void
     {
@@ -76,13 +76,12 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
             email: $data['email'],
             password: Str::password(32),
             role: $data['role'] ?? null,
-            isVerified: ! array_key_exists('email_verified_at', $data) || null !== $data['email_verified_at'],
+            isVerified: ! array_key_exists('email_verified_at', $data) || $data['email_verified_at'] !== null,
         );
     }
 
     /**
-     * @param array<string, mixed> $record
-     *
+     * @param  array<string, mixed>  $record
      * @return array{
      *     username: string,
      *     email: string,
@@ -102,14 +101,13 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
         $validated = Validator::make(
             data: $record,
             rules: [
-                'username'          => ['required', 'string'],
-                'email'             => ['required', 'email'],
+                'username' => ['required', 'string'],
+                'email' => ['required', 'email'],
                 'email_verified_at' => ['nullable', 'date'],
-                'role'              => ['sometimes', 'string'],
+                'role' => ['sometimes', 'string'],
             ],
         )->validate();
 
         return $validated;
     }
-
 }

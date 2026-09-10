@@ -13,7 +13,7 @@ it('creates a user within the tenant context and assigns the given role name', f
 
     app(TenantResolver::class)->execute(
         $tenant,
-        fn(): mixed => $roleClass::create(['name' => 'editor', 'guard_name' => 'web']),
+        fn (): mixed => $roleClass::create(['name' => 'editor', 'guard_name' => 'web']),
     );
 
     $user = app(CreateUserAction::class)->execute(

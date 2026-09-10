@@ -25,13 +25,13 @@ final class CreateUserAction
         $user = app(TenantResolver::class)->execute($tenant, function () use ($username, $email, $password, $role, $isVerified): User {
             /** @var User $user */
             $user = User::query()->create([
-                'username'          => $username,
-                'email'             => $email,
+                'username' => $username,
+                'email' => $email,
                 'email_verified_at' => $isVerified ? Carbon::now() : null,
-                'password'          => Hash::make($password),
+                'password' => Hash::make($password),
             ]);
 
-            if (null !== $role) {
+            if ($role !== null) {
                 $user->assignRole($role);
             }
 

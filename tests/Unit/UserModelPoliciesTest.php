@@ -11,7 +11,7 @@ it('applies shared tenant ownership to the user model', function (): void {
 });
 
 it('hides tenant and credential attributes', function (): void {
-    expect((new User())->getHidden())->toContain(
+    expect((new User)->getHidden())->toContain(
         'tenant_id',
         'password',
         'password_fingerprint',
