@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Support;
 
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use LogicException;
@@ -11,9 +12,9 @@ use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Exceptions\LastAdministratorException;
 use Misaf\VendraUser\Models\User;
 
-final class TenantAdministratorGuard
+final readonly class TenantAdministratorGuard
 {
-    public function __construct(private readonly TenantResolver $tenantResolver) {}
+    public function __construct(private TenantResolver $tenantResolver) {}
 
     public function execute(Model $tenant, callable $callback): mixed
     {
@@ -41,7 +42,7 @@ final class TenantAdministratorGuard
         }
 
         $administratorCount = User::query()
-            ->whereHas('tenants', fn ($query) => $query->whereKey($tenant->getKey()))
+            ->whereHas('tenants', fn (Builder $query) => $query->whereKey($tenant->getKey()))
             ->role($this->roleName())
             ->lockForUpdate()
             ->count();

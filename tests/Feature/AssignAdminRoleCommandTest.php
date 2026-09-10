@@ -15,8 +15,8 @@ it('infers the tenant and assigns the configured role model and role name', func
 
     $otherTenant = createTestTenant();
     $tenant = createTestTenant();
-    $tenantResolver = app(TenantResolver::class);
-    $roleClass = app(PermissionRegistrar::class)->getRoleClass();
+    $tenantResolver = resolve(TenantResolver::class);
+    $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
 
     $otherRole = $tenantResolver->execute(
         $otherTenant,
@@ -52,8 +52,8 @@ it('infers the tenant and assigns the configured role model and role name', func
 it('does not resolve a user from another tenant', function (): void {
     $userTenant = createTestTenant();
     $selectedTenant = createTestTenant();
-    $tenantResolver = app(TenantResolver::class);
-    $roleClass = app(PermissionRegistrar::class)->getRoleClass();
+    $tenantResolver = resolve(TenantResolver::class);
+    $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
 
     $user = $tenantResolver->execute(
         $userTenant,
@@ -87,7 +87,7 @@ it('fails when the user does not exist in the selected tenant', function (): voi
 
 it('fails when the configured role does not exist for the selected tenant', function (): void {
     $tenant = createTestTenant();
-    $tenantResolver = app(TenantResolver::class);
+    $tenantResolver = resolve(TenantResolver::class);
     $user = $tenantResolver->execute(
         $tenant,
         fn (): User => User::factory()->create(),
@@ -107,8 +107,8 @@ it('uses the user model default guard', function (): void {
     Config::set('auth.defaults.guard', 'sanctum');
 
     $tenant = createTestTenant();
-    $tenantResolver = app(TenantResolver::class);
-    $roleClass = app(PermissionRegistrar::class)->getRoleClass();
+    $tenantResolver = resolve(TenantResolver::class);
+    $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
     $role = $tenantResolver->execute(
         $tenant,
         fn () => $roleClass::create(['name' => 'admin', 'guard_name' => 'sanctum']),
@@ -132,8 +132,8 @@ it('uses the user model default guard', function (): void {
 
 it('does not duplicate an existing assignment', function (): void {
     $tenant = createTestTenant();
-    $tenantResolver = app(TenantResolver::class);
-    $roleClass = app(PermissionRegistrar::class)->getRoleClass();
+    $tenantResolver = resolve(TenantResolver::class);
+    $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
     $role = $tenantResolver->execute(
         $tenant,
         fn () => $roleClass::create(['name' => 'admin', 'guard_name' => 'web']),

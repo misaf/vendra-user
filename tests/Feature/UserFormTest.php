@@ -33,7 +33,7 @@ it('allows the same username in another tenant', function (): void {
     // panel tenant, so it must point at the foreign tenant while seeding.
     Filament::setTenant($otherTenant);
 
-    $otherUser = app(CreateUserAction::class)->execute(
+    $otherUser = resolve(CreateUserAction::class)->execute(
         tenant: $otherTenant,
         username: 'demo-user',
         email: 'other-tenant@example.com',

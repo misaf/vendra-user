@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Console\Commands;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Config;
@@ -17,18 +19,16 @@ use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\Guard;
 use Spatie\Permission\PermissionRegistrar;
 
+#[Description('Assign the admin role to a specific user')]
+#[Signature('user:assign-admin
+        {user_id=1 : The ID of the user to assign the admin role to}
+        {--tenant= : Optional tenant ID or slug; inferred from the user when omitted}')]
 final class AssignAdminRoleCommand extends Command implements PromptsForMissingInput
 {
-    protected $signature = 'user:assign-admin
-        {user_id=1 : The ID of the user to assign the admin role to}
-        {--tenant= : Optional tenant ID or slug; inferred from the user when omitted}';
-
-    protected $description = 'Assign the admin role to a specific user';
-
     public function handle(): int
     {
         $userId = (int) $this->argument('user_id');
-        $tenantResolver = app(TenantResolver::class);
+        $tenantResolver = resolve(TenantResolver::class);
 
         if (! $tenantResolver->available()) {
             return $this->assignAdminRole($userId);
@@ -63,9 +63,7 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
             fn (): int => $this->assignAdminRole($userId),
         );
 
-        if (! is_int($exitCode)) {
-            throw new LogicException('The tenant resolver returned an invalid command exit code.');
-        }
+        throw_unless(is_int($exitCode), LogicException::class, 'The tenant resolver returned an invalid command exit code.');
 
         return $exitCode;
     }
@@ -110,11 +108,9 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
      */
     private function roleModelClass(): string
     {
-        $roleModelClass = app(PermissionRegistrar::class)->getRoleClass();
+        $roleModelClass = resolve(PermissionRegistrar::class)->getRoleClass();
 
-        if (! is_a($roleModelClass, Role::class, true)) {
-            throw new LogicException("The configured role model [{$roleModelClass}] must implement the role contract.");
-        }
+        throw_unless(is_a($roleModelClass, Role::class, true), LogicException::class, "The configured role model [{$roleModelClass}] must implement the role contract.");
 
         return $roleModelClass;
     }

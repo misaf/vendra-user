@@ -19,9 +19,9 @@ use Spatie\Permission\PermissionRegistrar;
 
 function prepareAdministratorRole(Model $tenant): void
 {
-    $roleClass = app(PermissionRegistrar::class)->getRoleClass();
+    $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
 
-    app(TenantResolver::class)->execute(
+    resolve(TenantResolver::class)->execute(
         $tenant,
         fn (): mixed => $roleClass::query()->firstOrCreate([
             'name' => Config::string('vendra-permission.admin_role'),
@@ -34,7 +34,7 @@ it('adds a tenant administrator with a hashed password and membership', function
     $tenant = createTestTenant();
     prepareAdministratorRole($tenant);
 
-    $administrator = app(AddTenantAdministratorAction::class)->execute(
+    $administrator = resolve(AddTenantAdministratorAction::class)->execute(
         $tenant,
         'store_admin',
         'ADMIN@EXAMPLE.COM',
@@ -50,7 +50,7 @@ it('adds a tenant administrator with a hashed password and membership', function
 it('updates administrator credentials through domain actions', function (): void {
     $tenant = createTestTenant();
     prepareAdministratorRole($tenant);
-    $administrator = app(AddTenantAdministratorAction::class)->execute(
+    $administrator = resolve(AddTenantAdministratorAction::class)->execute(
         $tenant,
         'store_admin',
         'admin@example.com',
@@ -58,8 +58,8 @@ it('updates administrator credentials through domain actions', function (): void
     );
     $rememberToken = $administrator->getRememberToken();
 
-    app(UpdateUserPasswordAction::class)->execute($administrator, 'NewPassword123');
-    app(UpdateUserEmailAction::class)->execute($administrator, 'NEW@EXAMPLE.COM');
+    resolve(UpdateUserPasswordAction::class)->execute($administrator, 'NewPassword123');
+    resolve(UpdateUserEmailAction::class)->execute($administrator, 'NEW@EXAMPLE.COM');
 
     $administrator->refresh();
 
@@ -72,45 +72,45 @@ it('updates administrator credentials through domain actions', function (): void
 it('prevents the last enabled administrator from being demoted removed or disabled', function (): void {
     $tenant = createTestTenant();
     prepareAdministratorRole($tenant);
-    $administrator = app(AddTenantAdministratorAction::class)->execute(
+    $administrator = resolve(AddTenantAdministratorAction::class)->execute(
         $tenant,
         'only_admin',
         'only@example.com',
         'SecurePassword123',
     );
 
-    expect(fn () => app(DemoteTenantAdministratorAction::class)->execute($tenant, $administrator))
+    expect(fn () => resolve(DemoteTenantAdministratorAction::class)->execute($tenant, $administrator))
         ->toThrow(LastAdministratorException::class)
-        ->and(fn () => app(RemoveTenantAdministratorAction::class)->execute($tenant, $administrator))
+        ->and(fn () => resolve(RemoveTenantAdministratorAction::class)->execute($tenant, $administrator))
         ->toThrow(LastAdministratorException::class)
-        ->and(fn () => app(SetUserAccountEnabledAction::class)->execute($tenant, $administrator, false))
+        ->and(fn () => resolve(SetUserAccountEnabledAction::class)->execute($tenant, $administrator, false))
         ->toThrow(LastAdministratorException::class);
 });
 
 it('promotes demotes and disables administrators while another administrator remains', function (): void {
     $tenant = createTestTenant();
     prepareAdministratorRole($tenant);
-    $first = app(AddTenantAdministratorAction::class)->execute(
+    $first = resolve(AddTenantAdministratorAction::class)->execute(
         $tenant,
         'first_admin',
         'first@example.com',
         'SecurePassword123',
     );
-    $second = app(CreateUserAction::class)->execute(
+    $second = resolve(CreateUserAction::class)->execute(
         $tenant,
         'second_admin',
         'second@example.com',
         'SecurePassword123',
     );
 
-    app(PromoteTenantAdministratorAction::class)->execute($tenant, $second);
-    app(DemoteTenantAdministratorAction::class)->execute($tenant, $first);
-    app(SetUserAccountEnabledAction::class)->execute($tenant, $first, false);
+    resolve(PromoteTenantAdministratorAction::class)->execute($tenant, $second);
+    resolve(DemoteTenantAdministratorAction::class)->execute($tenant, $first);
+    resolve(SetUserAccountEnabledAction::class)->execute($tenant, $first, false);
 
     expect($first->newQuery()->find($first->getKey()))->toBeNull()
         ->and($second->refresh()->hasRole(Config::string('vendra-permission.admin_role')))->toBeTrue();
 
-    app(SetUserAccountEnabledAction::class)->execute($tenant, $first, true);
+    resolve(SetUserAccountEnabledAction::class)->execute($tenant, $first, true);
 
     expect($first->newQuery()->find($first->getKey()))->not->toBeNull();
 });

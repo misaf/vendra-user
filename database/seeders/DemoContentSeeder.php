@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Seeders;
 
+use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -72,11 +73,11 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
     {
         $this->createUserAction->execute(
             tenant: $tenant,
-            username: $data['username'],
-            email: $data['email'],
+            username: Arr::get($data, 'username'),
+            email: Arr::get($data, 'email'),
             password: Str::password(32),
-            role: $data['role'] ?? null,
-            isVerified: ! array_key_exists('email_verified_at', $data) || $data['email_verified_at'] !== null,
+            role: Arr::get($data, 'role', null),
+            isVerified: ! array_key_exists('email_verified_at', $data) || Arr::get($data, 'email_verified_at') !== null,
         );
     }
 

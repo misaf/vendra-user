@@ -39,7 +39,7 @@ final class UserEmailService
 
     public function getUsersByDomain(string $domain): Collection
     {
-        return User::where('email', 'like', "%@{$domain}")->get();
+        return User::query()->where('email', 'like', "%@{$domain}")->get();
     }
 
     /**
@@ -47,7 +47,7 @@ final class UserEmailService
      */
     public function getDomainStatistics(): array
     {
-        return User::selectRaw('
+        return User::query()->selectRaw('
                 CASE
                     WHEN email LIKE ? THEN SUBSTRING_INDEX(email, "@", -1)
                     ELSE NULL

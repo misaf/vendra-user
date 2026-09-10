@@ -11,9 +11,9 @@ use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Models\User;
 
-final class UpdateUserEmailAction
+final readonly class UpdateUserEmailAction
 {
-    public function __construct(private readonly TenantResolver $tenantResolver) {}
+    public function __construct(private TenantResolver $tenantResolver) {}
 
     public function execute(User $user, string $email, bool $verified = true): User
     {

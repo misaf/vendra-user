@@ -9,14 +9,14 @@ use Spatie\Permission\PermissionRegistrar;
 it('creates a user within the tenant context and assigns the given role name', function (): void {
     $tenant = createTestTenant();
 
-    $roleClass = app(PermissionRegistrar::class)->getRoleClass();
+    $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
 
-    app(TenantResolver::class)->execute(
+    resolve(TenantResolver::class)->execute(
         $tenant,
         fn (): mixed => $roleClass::create(['name' => 'editor', 'guard_name' => 'web']),
     );
 
-    $user = app(CreateUserAction::class)->execute(
+    $user = resolve(CreateUserAction::class)->execute(
         tenant: $tenant,
         username: 'demo-user',
         email: 'demo-user@example.com',
@@ -32,7 +32,7 @@ it('creates a user within the tenant context and assigns the given role name', f
 it('creates an unverified user without a role', function (): void {
     $tenant = createTestTenant();
 
-    $user = app(CreateUserAction::class)->execute(
+    $user = resolve(CreateUserAction::class)->execute(
         tenant: $tenant,
         username: 'plain-user',
         email: 'plain-user@example.com',
@@ -41,5 +41,5 @@ it('creates an unverified user without a role', function (): void {
     );
 
     expect($user->email_verified_at)->toBeNull()
-        ->and($user->roles)->toHaveCount(0);
+        ->and($user->roles)->toBeEmpty();
 });

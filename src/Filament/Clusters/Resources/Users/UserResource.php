@@ -152,9 +152,7 @@ final class UserResource extends Resource
 
     private static function user(Model $record): User
     {
-        if (! $record instanceof User) {
-            throw new InvalidArgumentException('User resources require a User record.');
-        }
+        throw_unless($record instanceof User, InvalidArgumentException::class, 'User resources require a User record.');
 
         return $record;
     }

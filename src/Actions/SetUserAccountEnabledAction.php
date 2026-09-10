@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Misaf\VendraUser\Models\User;
 use Misaf\VendraUser\Support\TenantAdministratorGuard;
 
-final class SetUserAccountEnabledAction
+final readonly class SetUserAccountEnabledAction
 {
-    public function __construct(private readonly TenantAdministratorGuard $guard) {}
+    public function __construct(private TenantAdministratorGuard $guard) {}
 
     public function execute(Model $tenant, User $user, bool $enabled): User
     {

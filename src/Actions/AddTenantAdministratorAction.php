@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Misaf\VendraUser\Models\User;
 use Misaf\VendraUser\Support\TenantAdministratorGuard;
 
-final class AddTenantAdministratorAction
+final readonly class AddTenantAdministratorAction
 {
     public function __construct(
-        private readonly CreateUserAction $createUserAction,
-        private readonly TenantAdministratorGuard $guard,
+        private CreateUserAction $createUserAction,
+        private TenantAdministratorGuard $guard,
     ) {}
 
     public function execute(

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Actions;
 
+use Illuminate\Support\Facades\Date;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Models\User;
@@ -22,12 +22,12 @@ final class CreateUserAction
         Role|string|null $role = null,
     ): User {
         /** @var User $user */
-        $user = app(TenantResolver::class)->execute($tenant, function () use ($username, $email, $password, $role, $isVerified): User {
+        $user = resolve(TenantResolver::class)->execute($tenant, function () use ($username, $email, $password, $role, $isVerified): User {
             /** @var User $user */
             $user = User::query()->create([
                 'username' => $username,
                 'email' => $email,
-                'email_verified_at' => $isVerified ? Carbon::now() : null,
+                'email_verified_at' => $isVerified ? Date::now() : null,
                 'password' => Hash::make($password),
             ]);
 

@@ -10,9 +10,9 @@ use Illuminate\Support\Str;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Models\User;
 
-final class UpdateUserPasswordAction
+final readonly class UpdateUserPasswordAction
 {
-    public function __construct(private readonly TenantResolver $tenantResolver) {}
+    public function __construct(private TenantResolver $tenantResolver) {}
 
     public function execute(User $user, string $password): User
     {

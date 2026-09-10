@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Console\Commands;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
@@ -15,18 +17,16 @@ use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\PermissionRegistrar;
 
-final class CreateUserCommand extends Command
-{
-    protected $signature = 'user:create
+#[Description('Create a new user and assign a role')]
+#[Signature('user:create
         {--tenant=1 : Tenant ID for the new user}
         {--username= : Username for the new user}
         {--email= : Email address for the new user}
         {--password= : Password for the new user}
         {--role= : Role name to assign}
-        {--guard=web : Guard name for the role}';
-
-    protected $description = 'Create a new user and assign a role';
-
+        {--guard=web : Guard name for the role}')]
+final class CreateUserCommand extends Command
+{
     public function __construct(private readonly CreateUserAction $createUserAction)
     {
         parent::__construct();
@@ -73,7 +73,7 @@ final class CreateUserCommand extends Command
 
         try {
             /** @var Role $resolvedRole */
-            $resolvedRole = app(TenantResolver::class)->execute(
+            $resolvedRole = resolve(TenantResolver::class)->execute(
                 $tenant,
                 fn (): Role => $this->roleModelClass()::findByName($role, $guardName),
             );
@@ -99,7 +99,7 @@ final class CreateUserCommand extends Command
     private function resolveTenant(): ?Model
     {
         $tenantId = (int) $this->option('tenant');
-        $tenant = app(TenantResolver::class)->findByKeyOrSlug($tenantId);
+        $tenant = resolve(TenantResolver::class)->findByKeyOrSlug($tenantId);
 
         if (! $tenant) {
             $this->error("Tenant with ID [{$tenantId}] not found.");
@@ -115,7 +115,7 @@ final class CreateUserCommand extends Command
      */
     private function roleModelClass(): string
     {
-        return app(PermissionRegistrar::class)->getRoleClass();
+        return resolve(PermissionRegistrar::class)->getRoleClass();
     }
 
     private function requiredInput(string $option, string $label, ?string $default = null, bool $secret = false): ?string
