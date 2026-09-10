@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Seeders;
 
-use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Misaf\VendraSupport\Tenancy\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;

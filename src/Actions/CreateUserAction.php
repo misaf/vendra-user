@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Actions;
 
-use Illuminate\Support\Facades\Date;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Models\User;
