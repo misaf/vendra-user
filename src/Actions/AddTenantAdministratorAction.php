@@ -30,7 +30,7 @@ final readonly class AddTenantAdministratorAction
                 email: $email,
                 password: $password,
                 isVerified: $verified,
-                role: $this->guard->roleName(),
+                role: $this->guard->role(),
             );
 
             $user->tenants()->syncWithoutDetaching([$tenant->getKey()]);

@@ -31,6 +31,7 @@ use Misaf\VendraSupport\Capabilities\HasOptionalTags;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Tenancy\BelongsToTenant;
 use Misaf\VendraUser\Database\Factories\UserFactory;
+use Misaf\VendraUser\Support\PanelAccessRegistry;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -38,7 +39,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property int $id
- * @property int $tenant_id
+ * @property int|null $tenant_id
  * @property string $username
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -89,10 +90,18 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return match ($panel->getId()) {
-            'admin' => $this->hasRole(RoleEnum::Admin),
-            default => false,
-        };
+        if ($panel->getId() === 'admin') {
+            return $this->hasRole(RoleEnum::Admin);
+        }
+
+        /*
+        | Console and reseller panel grants live in their own packages, which
+        | register a PanelAccessResolver for their panel id. Identity only
+        | asks the registry here — the same container lookup the tenant
+        | helpers use — so vendra-user never names their tables. A panel no
+        | package claimed stays denied.
+        */
+        return resolve(PanelAccessRegistry::class)->canAccess($this, $panel) ?? false;
     }
 
     public function getFilamentName(): string

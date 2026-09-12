@@ -19,7 +19,7 @@ final readonly class PromoteTenantAdministratorAction
             $this->guard->assertBelongsToTenant($user, $tenant);
 
             $user->tenants()->syncWithoutDetaching([$tenant->getKey()]);
-            $user->assignRole($this->guard->roleName());
+            $user->assignRole($this->guard->role());
 
             return $user->refresh();
         }));

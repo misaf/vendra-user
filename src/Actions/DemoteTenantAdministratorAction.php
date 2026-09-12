@@ -19,7 +19,7 @@ final readonly class DemoteTenantAdministratorAction
             $this->guard->assertBelongsToTenant($user, $tenant);
             $this->guard->assertMayRemoveAdministrator($user, $tenant);
 
-            $user->removeRole($this->guard->roleName());
+            $user->removeRole($this->guard->role());
 
             return $user->refresh();
         }));

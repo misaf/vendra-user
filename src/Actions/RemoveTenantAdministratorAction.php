@@ -19,8 +19,8 @@ final readonly class RemoveTenantAdministratorAction
             $this->guard->assertBelongsToTenant($user, $tenant);
             $this->guard->assertMayRemoveAdministrator($user, $tenant);
 
-            if ($user->hasRole($this->guard->roleName())) {
-                $user->removeRole($this->guard->roleName());
+            if ($user->hasRole($this->guard->role())) {
+                $user->removeRole($this->guard->role());
             }
 
             $user->tenants()->detach($tenant->getKey());
