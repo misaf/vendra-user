@@ -138,7 +138,7 @@ it('resolves platform password resets to the platform user on duplicate emails',
 });
 
 it('delegates non-admin panel access to registered resolvers and denies unclaimed panels', function (): void {
-    $registry = app(PanelAccessRegistry::class);
+    $registry = resolve(PanelAccessRegistry::class);
 
     $user = User::factory()->create(['tenant_id' => null]);
     $panel = Filament::getPanel('console');

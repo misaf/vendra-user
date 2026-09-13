@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraUser\Actions;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Misaf\VendraSupport\Contracts\TenantResolver;
-use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Models\User;
 
 final readonly class UpdateUserEmailAction
@@ -19,18 +16,8 @@ final readonly class UpdateUserEmailAction
     {
         $tenant = $user->tenant()->firstOrFail();
 
-        return $this->tenantResolver->execute($tenant, fn (): User => DB::transaction(function () use ($user, $email, $verified, $tenant): User {
+        return $this->tenantResolver->execute($tenant, fn (): User => DB::transaction(function () use ($user, $email, $verified): User {
             $lockedUser = User::query()->whereKey($user->getKey())->lockForUpdate()->firstOrFail();
-
-            Validator::make(['email' => $email], [
-                'email' => [
-                    'required',
-                    'email',
-                    Rule::unique(User::class, 'email')
-                        ->where(TenantSchema::column(), $tenant->getKey())
-                        ->ignore($lockedUser->getKey()),
-                ],
-            ])->validate();
 
             $lockedUser->forceFill([
                 'email' => $email,

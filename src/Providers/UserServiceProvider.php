@@ -8,6 +8,7 @@ use Composer\InstalledVersions;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
@@ -69,7 +70,7 @@ final class UserServiceProvider extends PackageServiceProvider
         | and `auth.providers.reseller` entries work wherever the
         | console/reseller packages point their guards at them.
         */
-        Auth::provider('platform-eloquent', static fn ($app, array $config): PlatformUserProvider => new PlatformUserProvider($app['hash'], $config['model']));
+        Auth::provider('platform-eloquent', static fn ($app, array $config): PlatformUserProvider => new PlatformUserProvider(Arr::get($app, 'hash'), Arr::get($config, 'model')));
 
         /*
         | `users` is deliberately absent from the TenantTableRegistry: a null

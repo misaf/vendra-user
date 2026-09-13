@@ -15,6 +15,7 @@ use Misaf\VendraUser\Actions\SetUserAccountEnabledAction;
 use Misaf\VendraUser\Actions\UpdateUserEmailAction;
 use Misaf\VendraUser\Actions\UpdateUserPasswordAction;
 use Misaf\VendraUser\Exceptions\LastAdministratorException;
+use Misaf\VendraUser\Models\User;
 use Spatie\Permission\PermissionRegistrar;
 
 function prepareAdministratorRole(Model $tenant): void
@@ -67,6 +68,19 @@ it('updates administrator credentials through domain actions', function (): void
         ->and($administrator->getRememberToken())->not->toBe($rememberToken)
         ->and($administrator->email)->toBe('new@example.com')
         ->and($administrator->email_verified_at)->not->toBeNull();
+});
+
+it('updates the password of a platform user that holds no tenant', function (): void {
+    $platformUser = User::factory()->create(['tenant_id' => null]);
+    $rememberToken = $platformUser->getRememberToken();
+
+    resolve(UpdateUserPasswordAction::class)->execute($platformUser, 'NewPassword123');
+
+    $platformUser->refresh();
+
+    expect($platformUser->tenant_id)->toBeNull()
+        ->and(Hash::check('NewPassword123', $platformUser->password))->toBeTrue()
+        ->and($platformUser->getRememberToken())->not->toBe($rememberToken);
 });
 
 it('prevents the last enabled administrator from being demoted removed or disabled', function (): void {

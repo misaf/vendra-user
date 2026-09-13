@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Hash;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Spatie\Permission\PermissionRegistrar;
@@ -26,6 +27,21 @@ it('creates a user within the tenant context and assigns the given role name', f
 
     expect($user->tenant_id)->toBe($tenant->getKey())
         ->and($user->hasRole('editor'))->toBeTrue()
+        ->and($user->email_verified_at)->not->toBeNull();
+});
+
+it('creates a platform user without a tenant even inside a tenant context', function (): void {
+    makeCurrentTestTenant();
+
+    $user = resolve(CreateUserAction::class)->execute(
+        tenant: null,
+        username: 'platform',
+        email: 'platform@example.com',
+        password: 'secret-password',
+    );
+
+    expect($user->refresh()->tenant_id)->toBeNull()
+        ->and(Hash::check('secret-password', $user->password))->toBeTrue()
         ->and($user->email_verified_at)->not->toBeNull();
 });
 
