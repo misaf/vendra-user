@@ -6,7 +6,6 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +16,7 @@ use Misaf\LaravelEmailVerification\Rules\EmailValidation;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
 use Misaf\VendraSupport\Tenancy\TenantAwareness;
+use Misaf\VendraTagger\Filament\Forms\Components\ModelTagsInput;
 use Misaf\VendraUser\Models\User;
 
 final class UserForm
@@ -104,11 +104,7 @@ final class UserForm
         ];
 
         if (TagIntegration::isAvailable()) {
-            $components[] = SpatieTagsInput::make('tags')
-                ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.tags'))
-                ->columnSpanFull()
-                ->label(__('vendra-support::attributes.tags'))
-                ->live()
+            $components[] = ModelTagsInput::make()
                 ->type(User::TAG_TYPE);
         }
 

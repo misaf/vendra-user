@@ -20,6 +20,10 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
+use Misaf\VendraSupport\Filament\Tables\Columns\CreatedAtColumn;
+use Misaf\VendraSupport\Filament\Tables\Columns\RowIndexColumn;
+use Misaf\VendraSupport\Filament\Tables\Columns\UpdatedAtColumn;
+use Misaf\VendraTagger\Filament\Tables\Columns\ModelTagsColumn;
 use Misaf\VendraUser\Models\User;
 
 final class UserTable
@@ -30,10 +34,7 @@ final class UserTable
          * @var array<int, TextColumn|SpatieTagsColumn> $columns
          */
         $columns = [
-            TextColumn::make('row')
-                ->label('#')
-                ->rowIndex()
-                ->sortable(['id']),
+            RowIndexColumn::make(),
 
             TextColumn::make('username')
                 ->label(__('vendra-user::attributes.username'))
@@ -63,32 +64,14 @@ final class UserTable
                     fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
                 ),
 
-            TextColumn::make('created_at')
-                ->extraCellAttributes(['dir' => 'ltr'])
-                ->label(__('vendra-user::attributes.created_at'))
-                ->sinceTooltip()
-                ->when(
-                    app()->isLocale('fa'),
-                    fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                    fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
-                ),
+            CreatedAtColumn::make(),
 
-            TextColumn::make('updated_at')
-                ->extraCellAttributes(['dir' => 'ltr'])
-                ->label(__('vendra-user::attributes.updated_at'))
-                ->sinceTooltip()
-                ->when(
-                    app()->isLocale('fa'),
-                    fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                    fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
-                ),
+            UpdatedAtColumn::make(),
         ];
 
         if (TagIntegration::isAvailable()) {
-            $columns[] = SpatieTagsColumn::make('tags')
-                ->label(__('vendra-support::attributes.tags'))
-                ->type(User::TAG_TYPE)
-                ->toggleable();
+            $columns[] = ModelTagsColumn::make()
+                ->type(User::TAG_TYPE);
         }
 
         return $table

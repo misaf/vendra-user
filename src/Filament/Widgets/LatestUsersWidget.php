@@ -8,6 +8,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Misaf\VendraSupport\Filament\Tables\Columns\CreatedAtColumn;
 use Misaf\VendraUser\Models\User;
 
 final class LatestUsersWidget extends BaseWidget
@@ -48,17 +49,9 @@ final class LatestUsersWidget extends BaseWidget
                         fn (TextColumn $column) => $column->dateTime('Y-m-d H:i')
                     ),
 
-                TextColumn::make('created_at')
+                CreatedAtColumn::make()
                     ->alignCenter()
-                    ->badge()
-                    ->extraCellAttributes(['dir' => 'ltr'])
-                    ->label(__('vendra-user::attributes.created_at'))
-                    ->sinceTooltip()
-                    ->when(
-                        app()->isLocale('fa'),
-                        fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                        fn (TextColumn $column) => $column->dateTime('Y-m-d H:i')
-                    ),
+                    ->badge(),
             ])
             ->searchable(false)
             ->paginated(false);

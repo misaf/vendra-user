@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas;
 
-use Filament\Infolists\Components\SpatieTagsEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
+use Misaf\VendraTagger\Filament\Infolists\Components\ModelTagsEntry;
 use Misaf\VendraUser\Models\User;
 
 final class UserInfolist
@@ -33,9 +33,7 @@ final class UserInfolist
         ];
 
         if (TagIntegration::isAvailable()) {
-            $components[] = SpatieTagsEntry::make('tags')
-                ->columnSpanFull()
-                ->label(__('vendra-support::attributes.tags'))
+            $components[] = ModelTagsEntry::make()
                 ->type(User::TAG_TYPE);
         }
 
