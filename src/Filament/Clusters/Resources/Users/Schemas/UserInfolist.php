@@ -7,6 +7,9 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Schemas;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
+use Misaf\VendraSupport\Filament\Infolists\Components\CreatedAtEntry;
+use Misaf\VendraSupport\Filament\Infolists\Components\DateTimeEntry;
+use Misaf\VendraSupport\Filament\Infolists\Components\UpdatedAtEntry;
 use Misaf\VendraTagger\Filament\Infolists\Components\ModelTagsEntry;
 use Misaf\VendraUser\Models\User;
 
@@ -27,9 +30,10 @@ final class UserInfolist
                 ->badge()
                 ->columnSpanFull()
                 ->label(__('vendra-permission::navigation.permissions')),
-            self::dateEntry('email_verified_at'),
-            self::dateEntry('created_at'),
-            self::dateEntry('updated_at'),
+            DateTimeEntry::make('email_verified_at')
+                ->label(__('vendra-user::attributes.email_verified_at')),
+            CreatedAtEntry::make(),
+            UpdatedAtEntry::make(),
         ];
 
         if (TagIntegration::isAvailable()) {
@@ -40,16 +44,5 @@ final class UserInfolist
         return $schema
             ->components($components)
             ->columns(2);
-    }
-
-    private static function dateEntry(string $name): TextEntry
-    {
-        return TextEntry::make($name)
-            ->label(__("vendra-user::attributes.{$name}"))
-            ->when(
-                app()->isLocale('fa'),
-                fn (TextEntry $entry): TextEntry => $entry->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                fn (TextEntry $entry): TextEntry => $entry->dateTime('Y-m-d H:i'),
-            );
     }
 }
