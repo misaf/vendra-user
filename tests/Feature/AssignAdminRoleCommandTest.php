@@ -31,7 +31,7 @@ it('infers the tenant and assigns the configured role model and role name', func
         fn (): User => User::factory()->create(['username' => 'tenant-admin']),
     );
 
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => $user->getKey(),
     ])
         ->expectsOutput("Successfully assigned admin role [platform-owner] to user tenant-admin (ID: {$user->getKey()}).")
@@ -64,7 +64,7 @@ it('does not resolve a user from another tenant', function (): void {
         fn () => $roleClass::create(['name' => 'admin', 'guard_name' => 'web']),
     );
 
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => $user->getKey(),
         '--tenant' => $selectedTenant->getKey(),
     ])
@@ -77,7 +77,7 @@ it('does not resolve a user from another tenant', function (): void {
 it('fails when the user does not exist in the selected tenant', function (): void {
     $tenant = createTestTenant();
 
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => 999,
         '--tenant' => $tenant->getKey(),
     ])
@@ -93,7 +93,7 @@ it('fails when the configured role does not exist for the selected tenant', func
         fn (): User => User::factory()->create(),
     );
 
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => $user->getKey(),
         '--tenant' => $tenant->getKey(),
     ])
@@ -118,7 +118,7 @@ it('uses the user model default guard', function (): void {
         fn (): User => User::factory()->create(),
     );
 
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => $user->getKey(),
         '--tenant' => $tenant->getKey(),
     ])->assertSuccessful();
@@ -148,7 +148,7 @@ it('does not duplicate an existing assignment', function (): void {
         },
     );
 
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => $user->getKey(),
         '--tenant' => $tenant->getKey(),
     ])
@@ -159,7 +159,7 @@ it('does not duplicate an existing assignment', function (): void {
 });
 
 it('fails when the selected tenant does not exist', function (): void {
-    $this->artisan('user:assign-admin', [
+    $this->artisan('vendra-user:assign-admin', [
         'user_id' => 1,
         '--tenant' => 999,
     ])

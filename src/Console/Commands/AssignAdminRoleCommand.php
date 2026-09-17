@@ -20,7 +20,7 @@ use Spatie\Permission\Guard;
 use Spatie\Permission\PermissionRegistrar;
 
 #[Description('Assign the admin role to a specific user')]
-#[Signature('user:assign-admin
+#[Signature('vendra-user:assign-admin
         {user_id=1 : The ID of the user to assign the admin role to}
         {--tenant= : Optional tenant ID or slug; inferred from the user when omitted}')]
 final class AssignAdminRoleCommand extends Command implements PromptsForMissingInput

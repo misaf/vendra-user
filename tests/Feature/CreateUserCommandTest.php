@@ -26,7 +26,7 @@ it('creates the user inside the selected tenant and assigns the role', function 
     $tenant = createTestTenant();
     createUserCommandRole($tenant);
 
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => $tenant->getKey(),
         '--username' => 'florist',
         '--email' => 'florist@example.test',
@@ -44,7 +44,7 @@ it('creates the user inside the selected tenant and assigns the role', function 
 });
 
 it('fails when the selected tenant does not exist', function (): void {
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => 999,
         '--username' => 'florist',
         '--email' => 'florist@example.test',
@@ -61,7 +61,7 @@ it('prompts for an option that was not passed', function (): void {
     $tenant = createTestTenant();
     createUserCommandRole($tenant);
 
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => $tenant->getKey(),
         '--username' => 'florist',
         '--email' => 'florist@example.test',
@@ -77,7 +77,7 @@ it('aborts when a prompted option is left empty', function (): void {
     $tenant = createTestTenant();
     createUserCommandRole($tenant);
 
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => $tenant->getKey(),
         '--username' => 'florist',
         '--email' => 'florist@example.test',
@@ -103,7 +103,7 @@ it('refuses an email another tenant already uses', function (): void {
         fn (): User => User::factory()->create(['email' => 'florist@example.test']),
     );
 
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => $tenant->getKey(),
         '--username' => 'florist',
         '--email' => 'florist@example.test',
@@ -123,7 +123,7 @@ it('refuses a username the selected tenant already uses', function (): void {
         fn (): User => User::factory()->create(['username' => 'florist']),
     );
 
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => $tenant->getKey(),
         '--username' => 'florist',
         '--email' => 'florist@example.test',
@@ -139,7 +139,7 @@ it('fails when the role does not exist for the selected tenant', function (): vo
     $tenant = createTestTenant();
     createUserCommandRole($otherTenant);
 
-    $this->artisan('user:create', [
+    $this->artisan('vendra-user:create', [
         '--tenant' => $tenant->getKey(),
         '--username' => 'florist',
         '--email' => 'florist@example.test',

@@ -18,7 +18,7 @@ use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\PermissionRegistrar;
 
 #[Description('Create a new user and assign a role')]
-#[Signature('user:create
+#[Signature('vendra-user:create
         {--tenant=1 : Tenant ID for the new user}
         {--username= : Username for the new user}
         {--email= : Email address for the new user}

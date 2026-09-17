@@ -47,8 +47,8 @@ provider is installed after migrations have run, use
 Create users, assign the configured admin role, or seed module data with:
 
 ```bash
-php artisan user:create
-php artisan user:assign-admin
+php artisan vendra-user:create
+php artisan vendra-user:assign-admin
 php artisan vendra-user:seed
 ```
 
