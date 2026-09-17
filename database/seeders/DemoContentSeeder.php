@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Misaf\VendraSupport\Tenancy\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Database\Factories\UserFactory;
+use Misaf\VendraUser\Models\User;
 
 final class DemoContentSeeder extends BaseDemoContentSeeder
 {
@@ -24,6 +25,13 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
     }
 
     /**
+     * The email address is the natural key — it already carries a
+     * tenant-scoped unique index — so an already seeded user is left alone
+     * rather than created a second time with a fresh random password. The
+     * seed command makes the tenant current for the run, so the lookup is
+     * scoped to it. Store provisioning retries the whole seed list on
+     * failure, so a partial run has to be safe to repeat.
+     *
      * @param  list<array<string, mixed>>  $records
      */
     protected function seedFixtures(array $records): void
@@ -68,6 +76,10 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
      */
     private function handleSeedFixtureRecord(Model $tenant, array $data): void
     {
+        if (User::query()->where('email', Arr::get($data, 'email'))->exists()) {
+            return;
+        }
+
         $this->createUserAction->execute(
             tenant: $tenant,
             username: Arr::get($data, 'username'),
