@@ -65,6 +65,7 @@ return new class extends Migration
                     ->nullable()
                     ->virtualAs('CASE WHEN deleted_at IS NULL AND '.TenantSchema::column().' IS NULL THEN username ELSE NULL END');
             }
+
             TenantSchema::addTenantIndex($table);
             $table->unique(TenantSchema::tenantIndex(['username']));
             $table->unique(TenantSchema::tenantIndex(['active_email_guard']), 'users_active_email_unique');
@@ -72,6 +73,7 @@ return new class extends Migration
                 $table->unique('global_email_guard', 'users_global_email_unique');
                 $table->unique('global_username_guard', 'users_global_username_unique');
             }
+
             $table->index(TenantSchema::tenantIndex(['email']));
             $table->index(TenantSchema::tenantIndex(['password_fingerprint']));
         });
