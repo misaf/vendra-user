@@ -9,14 +9,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Misaf\VendraSupport\Tenancy\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
-use Misaf\VendraSupport\Tenancy\RequiresCurrentTenant;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 
 final class DemoContentSeeder extends BaseDemoContentSeeder
 {
-    use RequiresCurrentTenant;
-
     public function __construct(private readonly CreateUserAction $createUserAction) {}
 
     protected function seedFactories(): void
