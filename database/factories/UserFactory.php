@@ -19,6 +19,9 @@ use Misaf\VendraUser\Models\User;
 #[UseModel(User::class)]
 final class UserFactory extends Factory
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         return [
