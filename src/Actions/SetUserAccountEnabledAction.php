@@ -16,11 +16,7 @@ final readonly class SetUserAccountEnabledAction
     public function execute(Model $tenant, User $user, bool $enabled): User
     {
         return DB::transaction(fn (): User => $this->guard->execute($tenant, function () use ($tenant, $user, $enabled): User {
-            $lockedUser = User::query()
-                ->withTrashed()
-                ->whereKey($user->getKey())
-                ->lockForUpdate()
-                ->firstOrFail();
+            $lockedUser = $user->refreshForUpdate();
 
             $this->guard->assertBelongsToTenant($lockedUser, $tenant);
 

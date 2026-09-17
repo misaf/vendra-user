@@ -6,6 +6,7 @@ namespace Misaf\VendraUser\Support;
 
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Config;
 use LogicException;
 use Misaf\VendraSupport\Contracts\TenantResolver;
@@ -21,10 +22,9 @@ final readonly class TenantAdministratorGuard
     public function execute(Model $tenant, callable $callback): mixed
     {
         return $this->tenantResolver->execute($tenant, function () use ($tenant, $callback): mixed {
-            $tenant->newQuery()
-                ->whereKey($tenant->getKey())
-                ->lockForUpdate()
-                ->firstOrFail();
+            $tenant->refreshForUpdate();
+
+            throw_if(method_exists($tenant, 'trashed') && $tenant->trashed(), (new ModelNotFoundException)->setModel($tenant::class));
 
             return $callback();
         });

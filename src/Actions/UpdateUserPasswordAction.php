@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Actions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -17,7 +18,9 @@ final readonly class UpdateUserPasswordAction
     public function execute(User $user, string $password): User
     {
         $update = fn (): User => DB::transaction(function () use ($user, $password): User {
-            $lockedUser = User::query()->whereKey($user->getKey())->lockForUpdate()->firstOrFail();
+            $lockedUser = $user->refreshForUpdate();
+
+            throw_if($lockedUser->trashed(), (new ModelNotFoundException)->setModel(User::class));
 
             $lockedUser->forceFill([
                 'password' => Hash::make($password),
