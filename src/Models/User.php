@@ -109,11 +109,6 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
         return $this->username ?? $this->email;
     }
 
-    public function getAuthifyLogUsername(): string
-    {
-        return $this->username;
-    }
-
     /**
      * @return BelongsToMany<Model, $this>
      */
