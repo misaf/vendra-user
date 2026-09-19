@@ -74,6 +74,8 @@ use Misaf\VendraTagger\Models\Tagger;
 Tagger::findOrCreate('VIP', type: 'user', locale: 'en');
 ```
 
+Demo seeders use bundled JSON fixtures in production and when their declared factory classes are unavailable. Local monorepo development continues to use factories when they are autoloadable.
+
 ## Testing
 
 Run the package checks from the project root:

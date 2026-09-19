@@ -15,6 +15,8 @@ use Misaf\VendraUser\Models\User;
 
 final class DemoContentSeeder extends BaseDemoContentSeeder
 {
+    protected const array FACTORIES = [UserFactory::class];
+
     public function __construct(private readonly CreateUserAction $createUserAction) {}
 
     protected function seedFactories(): void
