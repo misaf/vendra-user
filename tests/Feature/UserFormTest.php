@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Hash;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
 use Misaf\VendraUser\Models\User;
 
 use function Pest\Livewire\livewire;
@@ -53,4 +55,49 @@ it('allows the same username in another tenant', function (): void {
         ->assertHasNoFormErrors();
 
     expect(User::query()->withoutGlobalScopes()->where('username', 'demo-user')->count())->toBe(2);
+});
+
+it('creates the user in the panel tenant with a hashed password', function (): void {
+    livewire(CreateUser::class)
+        ->fillForm([
+            'username' => 'demo-user',
+            'email' => 'demo-user@gmail.com',
+            'password' => 'secret-password',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $user = User::query()->where('username', 'demo-user')->sole();
+
+    expect($user->tenant_id)->toBe($this->tenant->getKey())
+        ->and(Hash::check('secret-password', $user->password))->toBeTrue()
+        ->and($user->email_verified_at)->toBeNull();
+});
+
+it('rotates the remember token when an administrator changes the password', function (): void {
+    $user = User::factory()->create(['username' => 'demo-user', 'email' => 'demo-user@gmail.com', 'remember_token' => 'old-token']);
+
+    livewire(EditUser::class, ['record' => $user->getKey()])
+        ->fillForm(['password' => 'new-secret-password'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $user->refresh();
+
+    expect(Hash::check('new-secret-password', $user->password))->toBeTrue()
+        ->and($user->remember_token)->not->toBe('old-token');
+});
+
+it('keeps the password when the field is left blank', function (): void {
+    $user = User::factory()->create(['username' => 'demo-user', 'email' => 'demo-user@gmail.com', 'remember_token' => 'old-token']);
+    $passwordHash = $user->password;
+
+    livewire(EditUser::class, ['record' => $user->getKey()])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $user->refresh();
+
+    expect($user->password)->toBe($passwordHash)
+        ->and($user->remember_token)->toBe('old-token');
 });

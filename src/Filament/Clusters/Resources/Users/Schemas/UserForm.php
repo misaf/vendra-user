@@ -8,7 +8,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
@@ -72,7 +71,6 @@ final class UserForm
             TextInput::make('password')
                 ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.password'))
                 ->dehydrated(fn ($state): bool => filled($state))
-                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                 ->extraAttributes(['dir' => 'ltr'])
                 ->hintAction(GeneratePasswordAction::make())
                 ->label(__('vendra-user::attributes.password'))
