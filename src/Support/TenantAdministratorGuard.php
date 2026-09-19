@@ -60,13 +60,9 @@ final readonly class TenantAdministratorGuard
     }
 
     /**
-     * The admin role as a model, resolved for the tenant-facing guard.
+     * Get the admin role on the `web` guard.
      *
-     * String-based role operations resolve their guard from the ambient
-     * default guard, which Filament switches per panel (`console` inside
-     * the console panel). Tenant administration runs from the admin panel
-     * but also from the console panel's store managers, so the guard must
-     * be explicit: tenant admin roles live on the `web` guard.
+     * The guard is explicit because Filament switches the default guard per panel.
      */
     public function role(): Role
     {

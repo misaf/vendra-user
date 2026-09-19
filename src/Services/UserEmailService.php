@@ -42,9 +42,6 @@ final class UserEmailService
         return User::query()->where('email', 'like', "%@{$domain}")->get();
     }
 
-    /**
-     * Get email domain statistics
-     */
     public function getDomainStatistics(): array
     {
         return User::query()->selectRaw('

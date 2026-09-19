@@ -131,11 +131,7 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     }
 
     /**
-     * The tenants this user may sign into.
-     *
-     * The pivot is inferred from the configured tenant model rather than named,
-     * so a Store tenant joins through `store_user` and a Company tenant through
-     * `company_user` without this package knowing either.
+     * Get the tenants the user may sign into, through a pivot named after the tenant model.
      *
      * @return BelongsToMany<Model, $this>
      */

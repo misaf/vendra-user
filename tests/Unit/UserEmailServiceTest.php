@@ -9,7 +9,7 @@ describe('UserEmailService::getEmailDomain', function (): void {
     it('correctly extracts email domains', function (): void {
         $service = new UserEmailService;
 
-        // Test the getEmailDomain method with valid email formats
+        // Valid email formats.
         $testCases = [
             'user@gmail.com' => 'gmail.com',
             'admin@yahoo.com' => 'yahoo.com',
@@ -29,7 +29,7 @@ describe('UserEmailService::getEmailDomain', function (): void {
     it('handles empty and null emails', function (): void {
         $service = new UserEmailService;
 
-        // Test cases that should return null
+        // Values that return null.
         $nullEmails = [
             '', // Empty string
         ];
@@ -45,7 +45,7 @@ describe('UserEmailService::getEmailDomain', function (): void {
     it('handles null user email', function (): void {
         $service = new UserEmailService;
 
-        // Create user without setting email (it will be null)
+        // A user without an email.
         $user = new User;
 
         expect($service->getEmailDomain($user))->toBeNull();
@@ -54,7 +54,7 @@ describe('UserEmailService::getEmailDomain', function (): void {
     it('handles emails without @ symbol', function (): void {
         $service = new UserEmailService;
 
-        // Test cases that should return null (invalid email formats)
+        // Invalid email formats return null.
         $invalidEmails = [
             'invalidemail', // No @ symbol
             'justtext', // Plain text

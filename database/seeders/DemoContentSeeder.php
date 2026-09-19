@@ -27,12 +27,9 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
     }
 
     /**
-     * The email address is the natural key — it already carries a
-     * tenant-scoped unique index — so an already seeded user is left alone
-     * rather than created a second time with a fresh random password. The
-     * seed command makes the tenant current for the run, so the lookup is
-     * scoped to it. Store provisioning retries the whole seed list on
-     * failure, so a partial run has to be safe to repeat.
+     * Seed the fixtures idempotently, keyed on email within the current tenant.
+     *
+     * Store provisioning retries the whole seed list, so a partial run must be repeatable.
      *
      * @param  list<array<string, mixed>>  $records
      */

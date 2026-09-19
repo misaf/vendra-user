@@ -91,14 +91,7 @@ return new class extends Migration
     }
 
     /**
-     * Console users reset their password through the `console` broker, which
-     * stores tokens here. Reset tokens are keyed by email alone, so every
-     * scope needs its own store: a tenant user may share an email with a
-     * platform identity, and one platform identity may hold both a console
-     * grant and a reseller membership, so any shared table would let one
-     * scope overwrite or consume another's token. The shape mirrors
-     * `password_reset_tokens` so the framework's token repository works
-     * unchanged.
+     * Reset tokens are keyed by email alone, so each broker needs its own table.
      */
     private function createConsolePasswordResetTokensTable(): void
     {
@@ -111,12 +104,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reseller users reset their password through the `reseller` broker,
-     * which stores tokens here. See
-     * {@see self::createConsolePasswordResetTokensTable()} for why each scope
-     * keeps its own token store.
-     */
     private function createResellerPasswordResetTokensTable(): void
     {
         Schema::create('reseller_password_reset_tokens', function (Blueprint $table): void {

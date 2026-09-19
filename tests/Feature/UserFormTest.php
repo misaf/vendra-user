@@ -29,8 +29,7 @@ it('rejects a duplicate username within the current tenant', function (): void {
 it('allows the same username in another tenant', function (): void {
     $otherTenant = createTestTenant();
 
-    // Filament's panel tenancy hook re-associates created users with the
-    // panel tenant, so it must point at the foreign tenant while seeding.
+    // Filament associates created users with the panel tenant, so point it at the other tenant.
     Filament::setTenant($otherTenant);
 
     $otherUser = resolve(CreateUserAction::class)->execute(

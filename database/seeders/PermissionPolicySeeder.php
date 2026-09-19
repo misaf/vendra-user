@@ -12,11 +12,6 @@ final class PermissionPolicySeeder extends BasePermissionPolicySeeder
 {
     protected const string MODULE_NAME = UserPlugin::ID;
 
-    /**
-     * Unlike the other modules, user permissions are never global: every user
-     * belongs to a tenant, so seeding without a current tenant is an error
-     * rather than a tenant-less install.
-     */
     public function run(): void
     {
         $tenant = $this->currentTenant();

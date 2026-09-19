@@ -167,8 +167,7 @@ it('resolves web credentials through the tenant context, never the platform row'
 
     $tenant = createTestTenant();
 
-    // The platform row is created before a tenant is current, the way a
-    // console user or reseller user is.
+    // Create the platform user before a tenant is current, like a console user.
     $platformUser = User::factory()->create([
         'tenant_id' => null,
         'username' => 'web_scope_platform',

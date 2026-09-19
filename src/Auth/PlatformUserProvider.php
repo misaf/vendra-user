@@ -11,14 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 
 /**
- * Platform-scoped Eloquent user provider.
- *
- * Tenant users may share an email with a platform identity, so the
- * `console` and `reseller` guards must never resolve a row that belongs
- * to a tenant. Every lookup funnels through {@see EloquentUserProvider::newModelQuery()},
- * so constraining that single point scopes identifier, credential, and
- * remember-token retrieval to `tenant_id IS NULL` without duplicating the
- * framework's credential handling, hashing, or rehash behavior.
+ * Tenant users may share a platform user's email, so the console and reseller
+ * guards scope {@see EloquentUserProvider::newModelQuery()}.
  */
 final class PlatformUserProvider extends EloquentUserProvider
 {

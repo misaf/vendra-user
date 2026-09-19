@@ -8,14 +8,6 @@ use Filament\Panel;
 use Misaf\VendraUser\Contracts\PanelAccessResolver;
 use Misaf\VendraUser\Models\User;
 
-/**
- * Container-bound registry of per-panel access resolvers.
- *
- * Bound as an application singleton (see `UserServiceProvider`), so each
- * test's fresh application starts empty and package providers populate it
- * during boot — no static global state. `vendra-user` owns only this
- * infrastructure; the console and reseller packages own their resolvers.
- */
 final class PanelAccessRegistry
 {
     /**
@@ -34,7 +26,7 @@ final class PanelAccessRegistry
     }
 
     /**
-     * Resolve access for the given panel, or null when no package claimed it.
+     * Determine panel access, or null when no package claims the panel.
      */
     public function canAccess(User $user, Panel $panel): ?bool
     {

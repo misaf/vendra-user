@@ -12,9 +12,7 @@ use Misaf\VendraUser\Database\Seeders\PermissionPolicySeeder;
 use Misaf\VendraUser\UserPlugin;
 
 /**
- * The tenant argument is required here, unlike every other module: user
- * permissions are never global, so this command has nothing to seed without
- * one.
+ * Seed user data for a tenant, which is required since user permissions are never global.
  */
 #[Description('Seed user module data for a tenant')]
 #[Signature(self::MODULE_NAME.':seed

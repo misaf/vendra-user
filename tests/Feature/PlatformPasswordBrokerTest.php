@@ -78,8 +78,7 @@ it('keeps console and reseller tokens apart for one platform identity', function
     $consoleToken = Password::broker('console')->createToken($platformUser);
     $resellerToken = Password::broker('reseller')->createToken($platformUser);
 
-    // A reseller reset must never overwrite or consume the console token,
-    // even though both brokers resolve the very same user row.
+    // A reseller reset must not touch the console token for the same user.
     expect(Password::broker('console')->getRepository()->exists($platformUser, $consoleToken))->toBeTrue()
         ->and(Password::broker('reseller')->getRepository()->exists($platformUser, $resellerToken))->toBeTrue()
         ->and(Password::broker('console')->getRepository()->exists($platformUser, $resellerToken))->toBeFalse()
@@ -178,8 +177,7 @@ it('expires and throttles platform tokens per scope on Laravel defaults', functi
 
     $platformToken = Password::broker('console')->createToken($platformUser);
 
-    // Throttling is keyed by the scope's own store, so the platform token
-    // must not throttle the tenant identity's first request.
+    // Throttling is per scope, so the platform token does not throttle the tenant user.
     expect(Password::broker('console')->sendResetLink(['email' => $email]))->toBe(Password::RESET_THROTTLED)
         ->and(Password::broker('users')->sendResetLink(['email' => $email]))->toBe(Password::RESET_LINK_SENT)
         ->and(Password::broker('console')->getRepository()->exists($platformUser, $platformToken))->toBeTrue();

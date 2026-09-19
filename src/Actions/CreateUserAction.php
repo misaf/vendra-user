@@ -15,8 +15,7 @@ use Spatie\Permission\Contracts\Role;
 final class CreateUserAction
 {
     /**
-     * A null tenant creates a platform-level identity (console or reseller
-     * user) that never belongs to a tenant.
+     * A null tenant creates a platform user, such as a console or reseller user.
      */
     public function execute(
         ?Model $tenant,
