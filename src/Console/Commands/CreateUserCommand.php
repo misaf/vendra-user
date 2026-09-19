@@ -19,7 +19,7 @@ use Spatie\Permission\PermissionRegistrar;
 
 #[Description('Create a new user and assign a role')]
 #[Signature('vendra-user:create
-        {--tenant=1 : Tenant ID for the new user}
+        {--tenant=1 : Tenant ID or slug for the new user}
         {--username= : Username for the new user}
         {--email= : Email address for the new user}
         {--password= : Password for the new user}
@@ -98,11 +98,11 @@ final class CreateUserCommand extends Command
 
     private function resolveTenant(): ?Model
     {
-        $tenantId = (int) $this->option('tenant');
-        $tenant = resolve(TenantResolver::class)->findByKeyOrSlug($tenantId);
+        $tenantIdentifier = (string) $this->option('tenant');
+        $tenant = resolve(TenantResolver::class)->findByKeyOrSlug($tenantIdentifier);
 
         if (! $tenant) {
-            $this->error("Tenant with ID [{$tenantId}] not found.");
+            $this->error("Tenant [{$tenantIdentifier}] not found.");
 
             return null;
         }

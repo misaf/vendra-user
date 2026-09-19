@@ -4,34 +4,46 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Console\Commands;
 
+use Closure;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Illuminate\Support\Facades\Config;
 use LogicException;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraSupport\Tenancy\Scopes\TeamScope;
 use Misaf\VendraSupport\Tenancy\Scopes\TenantScope;
+use Misaf\VendraUser\Actions\PromoteTenantAdministratorAction;
 use Misaf\VendraUser\Models\User;
-use Spatie\Permission\Contracts\Role;
+use Misaf\VendraUser\Support\TenantAdministratorGuard;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
-use Spatie\Permission\Guard;
-use Spatie\Permission\PermissionRegistrar;
 
+/**
+ * The admin role always lives on the `web` guard, as it does when a store is
+ * provisioned, whatever the ambient default guard is.
+ */
 #[Description('Assign the admin role to a specific user')]
 #[Signature('vendra-user:assign-admin
         {user_id=1 : The ID of the user to assign the admin role to}
         {--tenant= : Optional tenant ID or slug; inferred from the user when omitted}')]
 final class AssignAdminRoleCommand extends Command implements PromptsForMissingInput
 {
+    public function __construct(
+        private readonly TenantAdministratorGuard $administratorGuard,
+        private readonly PromoteTenantAdministratorAction $promoteTenantAdministratorAction,
+    ) {
+        parent::__construct();
+    }
+
     public function handle(): int
     {
         $userId = (int) $this->argument('user_id');
         $tenantResolver = resolve(TenantResolver::class);
 
         if (! $tenantResolver->available()) {
-            return $this->assignAdminRole($userId);
+            return $this->assignAdminRole($userId, function (User $user): void {
+                $user->assignRole($this->administratorGuard->role());
+            });
         }
 
         $tenantIdentifier = (string) $this->option('tenant');
@@ -60,7 +72,9 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
 
         $exitCode = $tenantResolver->execute(
             $tenant,
-            fn (): int => $this->assignAdminRole($userId),
+            fn (): int => $this->assignAdminRole($userId, function (User $user) use ($tenant): void {
+                $this->promoteTenantAdministratorAction->execute($tenant, $user);
+            }),
         );
 
         throw_unless(is_int($exitCode), LogicException::class, 'The tenant resolver returned an invalid command exit code.');
@@ -68,9 +82,12 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
         return $exitCode;
     }
 
-    private function assignAdminRole(int $userId): int
+    /**
+     * @param  Closure(User): void  $assign
+     */
+    private function assignAdminRole(int $userId, Closure $assign): int
     {
-        $roleName = Config::string('vendra-permission.admin_role');
+        $roleName = $this->administratorGuard->roleName();
 
         $user = User::query()->find($userId);
 
@@ -80,38 +97,22 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
             return self::FAILURE;
         }
 
-        $guardName = Guard::getDefaultName($user);
-
-        try {
-            $adminRole = $this->roleModelClass()::findByName($roleName, $guardName);
-        } catch (RoleDoesNotExist) {
-            $this->error("Admin role [{$roleName}] with guard [{$guardName}] not found. Please run the PermissionSeeder first.");
-
-            return self::FAILURE;
-        }
-
-        if ($user->hasRole($adminRole)) {
+        if ($user->hasRole($roleName, 'web')) {
             $this->info("User {$user->username} (ID: {$userId}) already has the admin role [{$roleName}].");
 
             return self::SUCCESS;
         }
 
-        $user->assignRole($adminRole);
+        try {
+            $assign($user);
+        } catch (RoleDoesNotExist) {
+            $this->error("Admin role [{$roleName}] with guard [web] not found. Please run the PermissionSeeder first.");
+
+            return self::FAILURE;
+        }
 
         $this->info("Successfully assigned admin role [{$roleName}] to user {$user->username} (ID: {$userId}).");
 
         return self::SUCCESS;
-    }
-
-    /**
-     * @return class-string<Role>
-     */
-    private function roleModelClass(): string
-    {
-        $roleModelClass = resolve(PermissionRegistrar::class)->getRoleClass();
-
-        throw_unless(is_a($roleModelClass, Role::class, true), LogicException::class, "The configured role model [{$roleModelClass}] must implement the role contract.");
-
-        return $roleModelClass;
     }
 }

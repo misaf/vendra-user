@@ -103,15 +103,18 @@ it('fails when the configured role does not exist for the selected tenant', func
     expect($user->roles()->count())->toBe(0);
 });
 
-it('uses the user model default guard', function (): void {
+it('uses the web guard and attaches the tenant even when the default guard differs', function (): void {
     Config::set('auth.defaults.guard', 'sanctum');
 
     $tenant = createTestTenant();
     $tenantResolver = resolve(TenantResolver::class);
     $roleClass = resolve(PermissionRegistrar::class)->getRoleClass();
-    $role = $tenantResolver->execute(
+    [$webRole, $sanctumRole] = $tenantResolver->execute(
         $tenant,
-        fn () => $roleClass::create(['name' => 'admin', 'guard_name' => 'sanctum']),
+        fn (): array => [
+            $roleClass::create(['name' => 'admin', 'guard_name' => 'web']),
+            $roleClass::create(['name' => 'admin', 'guard_name' => 'sanctum']),
+        ],
     );
     $user = $tenantResolver->execute(
         $tenant,
@@ -124,10 +127,16 @@ it('uses the user model default guard', function (): void {
     ])->assertSuccessful();
 
     assertDatabaseHas('model_has_roles', [
-        'role_id' => $role->getKey(),
+        'role_id' => $webRole->getKey(),
         'model_type' => $user->getMorphClass(),
         'model_id' => $user->getKey(),
     ]);
+    assertDatabaseMissing('model_has_roles', [
+        'role_id' => $sanctumRole->getKey(),
+        'model_type' => $user->getMorphClass(),
+        'model_id' => $user->getKey(),
+    ]);
+    expect($user->tenants()->whereKey($tenant->getKey())->exists())->toBeTrue();
 });
 
 it('does not duplicate an existing assignment', function (): void {

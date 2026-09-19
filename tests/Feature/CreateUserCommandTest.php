@@ -43,6 +43,24 @@ it('creates the user inside the selected tenant and assigns the role', function 
     ]);
 });
 
+it('creates the user in a tenant given by slug', function (): void {
+    $tenant = createTestTenant();
+    createUserCommandRole($tenant);
+
+    $this->artisan('vendra-user:create', [
+        '--tenant' => $tenant->slug,
+        '--username' => 'florist',
+        '--email' => 'florist@example.test',
+        '--password' => 'secret-password',
+        '--role' => 'admin',
+    ])->assertSuccessful();
+
+    assertDatabaseHas('users', [
+        'username' => 'florist',
+        TenantSchema::column() => $tenant->getKey(),
+    ]);
+});
+
 it('fails when the selected tenant does not exist', function (): void {
     $this->artisan('vendra-user:create', [
         '--tenant' => 999,
@@ -51,7 +69,7 @@ it('fails when the selected tenant does not exist', function (): void {
         '--password' => 'secret-password',
         '--role' => 'admin',
     ])
-        ->expectsOutput('Tenant with ID [999] not found.')
+        ->expectsOutput('Tenant [999] not found.')
         ->assertFailed();
 
     assertDatabaseMissing('users', ['email' => 'florist@example.test']);
