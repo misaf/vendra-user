@@ -28,6 +28,22 @@ it('rejects a duplicate username within the current tenant', function (): void {
         ->assertHasFormErrors(['username']);
 });
 
+it('reuses the username and email of a soft-deleted user in the same tenant', function (): void {
+    User::factory()->create(['username' => 'demo-user', 'email' => 'demo-user@gmail.com'])->delete();
+
+    livewire(CreateUser::class)
+        ->fillForm([
+            'username' => 'demo-user',
+            'email' => 'demo-user@gmail.com',
+            'password' => 'secret-password',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(User::query()->where('username', 'demo-user')->count())->toBe(1)
+        ->and(User::onlyTrashed()->where('username', 'demo-user')->count())->toBe(1);
+});
+
 it('allows the same username in another tenant', function (): void {
     $otherTenant = createTestTenant();
 

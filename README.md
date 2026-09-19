@@ -62,6 +62,12 @@ being removed, demoted, or disabled. `UpdateUserEmailAction` and
 `UpdateUserPasswordAction` provide normalized/validated credential changes,
 framework hashing, and remember-token rotation without exposing stored hashes.
 
+Forms in any panel validate usernames and emails through `Support\UserRules`.
+`UserRules::email()` is the strict email rule, and `UserRules::unique()` checks
+a value within one tenant, or among platform users when the tenant is null.
+Soft-deleted users release their username and email, matching the
+`users_active_username_unique` and `users_active_email_unique` indexes.
+
 ## Optional tags
 
 When Tagger is installed, the user form and table expose tags automatically. User imports neither Vendra Tagger nor Spatie Tags; the integration is resolved through Support.

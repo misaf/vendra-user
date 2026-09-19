@@ -11,12 +11,12 @@ use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
-use Misaf\LaravelEmailVerification\Rules\EmailValidation;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
 use Misaf\VendraSupport\Tenancy\TenantAwareness;
 use Misaf\VendraTagger\Filament\Forms\Components\ModelTagsInput;
 use Misaf\VendraUser\Models\User;
+use Misaf\VendraUser\Support\UserRules;
 
 final class UserForm
 {
@@ -36,10 +36,7 @@ final class UserForm
                 ->minLength(3)
                 ->required()
                 ->rules(['alpha_dash'])
-                ->unique(
-                    modifyRuleUsing: fn (Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
-                        ->withoutTrashed(),
-                ),
+                ->rule(fn (?User $record): Unique => UserRules::unique('username', TenantAwareness::currentId(), $record?->id)),
 
             TextInput::make('email')
                 ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.email'))
@@ -50,11 +47,8 @@ final class UserForm
                 ->live(onBlur: true)
                 ->maxLength(255)
                 ->required()
-                ->rules(['bail', 'email:rfc,strict,spoof,filter,filter_unicode', new EmailValidation])
-                ->unique(
-                    modifyRuleUsing: fn (Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
-                        ->withoutTrashed(),
-                ),
+                ->rules(UserRules::email())
+                ->rule(fn (?User $record): Unique => UserRules::unique('email', TenantAwareness::currentId(), $record?->id)),
 
             DateTimePicker::make('email_verified_at')
                 ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.email_verified_at'))

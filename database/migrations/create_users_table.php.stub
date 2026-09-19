@@ -49,6 +49,9 @@ return new class extends Migration
             $table->string('active_email_guard')
                 ->nullable()
                 ->virtualAs('CASE WHEN deleted_at IS NULL THEN email ELSE NULL END');
+            $table->string('active_username_guard')
+                ->nullable()
+                ->virtualAs('CASE WHEN deleted_at IS NULL THEN username ELSE NULL END');
             /*
             | Platform-level identities (console users, reseller users)
             | carry a null tenant id, where the tenant-scoped uniques below
@@ -67,13 +70,14 @@ return new class extends Migration
             }
 
             TenantSchema::addTenantIndex($table);
-            $table->unique(TenantSchema::tenantIndex(['username']));
+            $table->unique(TenantSchema::tenantIndex(['active_username_guard']), 'users_active_username_unique');
             $table->unique(TenantSchema::tenantIndex(['active_email_guard']), 'users_active_email_unique');
             if (TenantSchema::enabled()) {
                 $table->unique('global_email_guard', 'users_global_email_unique');
                 $table->unique('global_username_guard', 'users_global_username_unique');
             }
 
+            $table->index(TenantSchema::tenantIndex(['username']));
             $table->index(TenantSchema::tenantIndex(['email']));
             $table->index(TenantSchema::tenantIndex(['password_fingerprint']));
         });
