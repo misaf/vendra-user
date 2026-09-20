@@ -29,7 +29,7 @@ final class CreateUserAction
             return DB::transaction(function () use ($username, $email, $password, $role, $isVerified): User {
                 $user = $this->createUser($username, $email, $password, $role, $isVerified, platformLevel: true);
 
-                if ($user->tenant_id !== null) {
+                if ($user->hasTenant()) {
                     /*
                     | The tenant hook stamps the current tenant when there is
                     | one (tests, callers inside tenant middleware). A
