@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
@@ -13,6 +14,35 @@ use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
     $this->tenant = setUpFilamentAdminTestContext();
+});
+
+it('validates usernames through the shared user rules', function (string $username, string $rule): void {
+    livewire(CreateUser::class)
+        ->fillForm(['username' => $username, 'email' => 'new-user@gmail.com', 'password' => 'secret-password'])
+        ->call('create')
+        ->assertHasFormErrors(['username' => $rule]);
+
+    expect(User::query()->where('email', 'new-user@gmail.com')->exists())->toBeFalse();
+})->with([
+    'short' => ['ab', 'min'],
+    'long' => ['username12345', 'max'],
+    'punctuation' => ['user.name', 'alpha_dash'],
+]);
+
+it('applies the application password policy through the shared user rules', function (): void {
+    $passwordDefaults = Password::$defaultCallback;
+    Password::defaults(fn () => Password::min(20));
+
+    try {
+        livewire(CreateUser::class)
+            ->fillForm(['username' => 'new-user', 'email' => 'new-user@gmail.com', 'password' => 'secret-password'])
+            ->call('create')
+            ->assertHasFormErrors(['password']);
+
+        expect(User::query()->where('email', 'new-user@gmail.com')->exists())->toBeFalse();
+    } finally {
+        Password::$defaultCallback = $passwordDefaults;
+    }
 });
 
 it('rejects a duplicate username within the current tenant', function (): void {

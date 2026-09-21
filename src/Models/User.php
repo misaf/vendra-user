@@ -12,7 +12,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +32,9 @@ use Misaf\VendraPermission\Enums\RoleEnum;
 use Misaf\VendraSupport\Capabilities\HasOptionalTags;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Tenancy\BelongsToTenant;
+use Misaf\VendraSupport\Tenancy\Scopes\TeamScope;
+use Misaf\VendraSupport\Tenancy\Scopes\TenantScope;
+use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 use Misaf\VendraUser\Support\PanelAccessRegistry;
 use Spatie\MediaLibrary\HasMedia;
@@ -86,6 +91,28 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
             'password_fingerprint' => 'string',
             'remember_token' => 'string',
         ];
+    }
+
+    /**
+     * Limit the query to tenantless users — the identities that belong to no
+     * tenant, such as console and reseller users.
+     *
+     * A tenant user may hold the same email as a tenantless user, so the tenant
+     * scopes come off rather than being left to the ambient tenant context.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    #[Scope]
+    protected function tenantless(Builder $query): Builder
+    {
+        $query->withoutGlobalScopes([TenantScope::class, TeamScope::class]);
+
+        if (! TenantSchema::enabled()) {
+            return $query;
+        }
+
+        return $query->whereNull($this->qualifyColumn(TenantSchema::column()));
     }
 
     public function canAccessPanel(Panel $panel): bool

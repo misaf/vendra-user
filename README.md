@@ -62,11 +62,23 @@ being removed, demoted, or disabled. `UpdateUserEmailAction` and
 `UpdateUserPasswordAction` provide normalized/validated credential changes,
 framework hashing, and remember-token rotation without exposing stored hashes.
 
-Forms in any panel validate usernames and emails through `Support\UserRules`.
+Forms and commands validate user credentials through `Support\UserRules`.
+`username()` supplies the shared 3–12 character `alpha_dash` rules; the username
+length constants also drive form inputs. `password()` uses the application
+`Password::default()` policy, and `generatePassword()` derives its length and
+character set from that same policy, so seeded and command-issued passwords
+pass the rules a supplied password must meet. Callers add required/optional, confirmation, and
+scoped uniqueness rules; reseller registration additionally requires ASCII.
 `UserRules::email()` is the strict email rule, and `UserRules::unique()` checks
-a value within one tenant, or among platform users when the tenant is null.
+a value within one tenant, or among tenantless users when the tenant is null.
 Soft-deleted users release their username and email, matching the
 `users_active_username_unique` and `users_active_email_unique` indexes.
+
+Look a tenantless identity up with the `User` model's `tenantless()` scope —
+`User::query()->tenantless()->where('email', $email)->first()`. It drops the
+tenant and team scopes and keeps `tenant_id` null, so a console or reseller
+lookup never returns a tenant user who happens to share the email, whatever
+tenant is current.
 
 ## Optional tags
 

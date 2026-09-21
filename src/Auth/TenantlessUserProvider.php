@@ -11,10 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 
 /**
- * Tenant users may share a platform user's email, so the console and reseller
+ * Tenant users may share a tenantless user's email, so the console and reseller
  * guards scope {@see EloquentUserProvider::newModelQuery()}.
  */
-final class PlatformUserProvider extends EloquentUserProvider
+final class TenantlessUserProvider extends EloquentUserProvider
 {
     /**
      * @template TModel of Model
@@ -31,7 +31,7 @@ final class PlatformUserProvider extends EloquentUserProvider
 
         /*
         | No tenant column means no tenant rows exist to be confused with a
-        | platform identity, so returning the unscoped query is the correct
+        | tenantless identity, so returning the unscoped query is the correct
         | answer rather than a fail-open hole: `users` is deliberately absent
         | from the TenantTableRegistry, so `vendra-tenant:enable` never
         | retrofits the column onto it, and an install that migrated without a

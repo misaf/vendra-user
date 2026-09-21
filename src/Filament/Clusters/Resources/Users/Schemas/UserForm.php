@@ -8,7 +8,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
@@ -32,10 +31,10 @@ final class UserForm
                 ->helperText(__('vendra-user::forms.username_helper_text'))
                 ->label(__('vendra-user::attributes.username'))
                 ->live(onBlur: true)
-                ->maxLength(12)
-                ->minLength(3)
+                ->maxLength(UserRules::USERNAME_MAX_LENGTH)
+                ->minLength(UserRules::USERNAME_MIN_LENGTH)
                 ->required()
-                ->rules(['alpha_dash'])
+                ->rules(UserRules::username())
                 ->rule(fn (?User $record): Unique => UserRules::unique('username', TenantAwareness::currentId(), $record?->id)),
 
             TextInput::make('email')
@@ -72,7 +71,7 @@ final class UserForm
                 ->password()
                 ->required(fn (string $operation): bool => $operation === 'create')
                 ->revealable(filament()->arePasswordsRevealable())
-                ->rule(Password::default()),
+                ->rules(UserRules::password()),
 
             Select::make('roles')
                 ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.roles'))

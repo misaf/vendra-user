@@ -9,10 +9,13 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Models\User;
+use Misaf\VendraUser\Support\UserRules;
 use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\PermissionRegistrar;
@@ -51,6 +54,22 @@ final class CreateUserCommand extends Command
         $guardName = $this->requiredInput('guard', 'Guard name', 'web');
 
         if ($username === null || $email === null || $password === null || $role === null || $guardName === null) {
+            return self::FAILURE;
+        }
+
+        $email = Str::lower(mb_trim($email));
+        $validator = Validator::make(
+            ['username' => $username, 'email' => $email, 'password' => $password],
+            [
+                'username' => ['required', ...UserRules::username()],
+                'email' => ['required', ...UserRules::email()],
+                'password' => ['required', ...UserRules::password()],
+            ],
+        );
+
+        if ($validator->fails()) {
+            $this->error($validator->errors()->first());
+
             return self::FAILURE;
         }
 
@@ -110,14 +129,6 @@ final class CreateUserCommand extends Command
         return $tenant;
     }
 
-    /**
-     * @return class-string<Role>
-     */
-    private function roleModelClass(): string
-    {
-        return resolve(PermissionRegistrar::class)->getRoleClass();
-    }
-
     private function requiredInput(string $option, string $label, ?string $default = null, bool $secret = false): ?string
     {
         $value = $this->option($option);
@@ -137,5 +148,13 @@ final class CreateUserCommand extends Command
             : $this->ask($label, $default);
 
         return is_string($answer) && $answer !== '' ? $answer : null;
+    }
+
+    /**
+     * @return class-string<Role>
+     */
+    private function roleModelClass(): string
+    {
+        return resolve(PermissionRegistrar::class)->getRoleClass();
     }
 }

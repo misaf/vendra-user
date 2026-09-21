@@ -30,13 +30,13 @@ it('creates a user within the tenant context and assigns the given role name', f
         ->and($user->email_verified_at)->not->toBeNull();
 });
 
-it('creates a platform user without a tenant even inside a tenant context', function (): void {
+it('creates a tenantless user without a tenant even inside a tenant context', function (): void {
     makeCurrentTestTenant();
 
     $user = resolve(CreateUserAction::class)->execute(
         tenant: null,
-        username: 'platform',
-        email: 'platform@example.com',
+        username: 'tenantless',
+        email: 'tenantless@example.com',
         password: 'secret-password',
     );
 

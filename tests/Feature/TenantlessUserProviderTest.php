@@ -5,21 +5,21 @@ declare(strict_types=1);
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Misaf\VendraUser\Auth\PlatformUserProvider;
+use Misaf\VendraUser\Auth\TenantlessUserProvider;
 use Misaf\VendraUser\Models\User;
 use Misaf\VendraUser\Support\PanelAccessRegistry;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 
-function platformProviderUserSuite(): PlatformUserProvider
+function tenantlessProviderUserSuite(): TenantlessUserProvider
 {
     $provider = auth('console')->getProvider();
 
-    expect($provider)->toBeInstanceOf(PlatformUserProvider::class);
+    expect($provider)->toBeInstanceOf(TenantlessUserProvider::class);
 
     return $provider;
 }
 
-it('scopes credential lookup to platform identities when emails collide', function (): void {
+it('scopes credential lookup to tenantless identities when emails collide', function (): void {
     $tenant = createTestTenant();
     $email = 'shared@example.test';
 
@@ -29,32 +29,32 @@ it('scopes credential lookup to platform identities when emails collide', functi
         'password' => Hash::make('tenant-password'),
     ]);
 
-    $platformUser = User::factory()->create([
+    $tenantlessUser = User::factory()->create([
         'tenant_id' => null,
-        'username' => 'platform_user',
+        'username' => 'tenantless_user',
         'email' => $email,
-        'password' => Hash::make('platform-password'),
+        'password' => Hash::make('tenantless-password'),
     ]);
 
-    expect($platformUser->tenant_id)->toBeNull();
+    expect($tenantlessUser->tenant_id)->toBeNull();
 
-    $provider = platformProviderUserSuite();
+    $provider = tenantlessProviderUserSuite();
 
     $byCredentials = $provider->retrieveByCredentials(['email' => $email]);
 
-    expect($byCredentials?->getKey())->toBe($platformUser->getKey())
-        ->and($provider->validateCredentials($byCredentials, ['password' => 'platform-password']))->toBeTrue()
+    expect($byCredentials?->getKey())->toBe($tenantlessUser->getKey())
+        ->and($provider->validateCredentials($byCredentials, ['password' => 'tenantless-password']))->toBeTrue()
         ->and($provider->validateCredentials($byCredentials, ['password' => 'tenant-password']))->toBeFalse();
 
     // The plain users provider keeps its existing tenant-agnostic behavior.
     $webUser = auth('web')->getProvider()->retrieveByCredentials(['email' => $email]);
 
-    expect(auth('web')->getProvider())->not->toBeInstanceOf(PlatformUserProvider::class)
+    expect(auth('web')->getProvider())->not->toBeInstanceOf(TenantlessUserProvider::class)
         ->and($webUser)->not->toBeNull()
-        ->and($tenantUser->getKey())->not->toBe($platformUser->getKey());
+        ->and($tenantUser->getKey())->not->toBe($tenantlessUser->getKey());
 });
 
-it('resolves platform users by id and remember token, never tenant rows', function (): void {
+it('resolves tenantless users by id and remember token, never tenant rows', function (): void {
     $tenant = createTestTenant();
     $email = 'token-shared@example.test';
 
@@ -64,31 +64,31 @@ it('resolves platform users by id and remember token, never tenant rows', functi
         'remember_token' => 'tenant-token',
     ]);
 
-    $platformUser = User::factory()->create([
+    $tenantlessUser = User::factory()->create([
         'tenant_id' => null,
-        'username' => 'token_platform',
+        'username' => 'token_tenantless',
         'email' => $email,
-        'remember_token' => 'platform-token',
+        'remember_token' => 'tenantless-token',
     ]);
 
-    $provider = platformProviderUserSuite();
+    $provider = tenantlessProviderUserSuite();
 
-    expect($provider->retrieveById($platformUser->getKey())?->getKey())->toBe($platformUser->getKey())
+    expect($provider->retrieveById($tenantlessUser->getKey())?->getKey())->toBe($tenantlessUser->getKey())
         ->and($provider->retrieveById($tenantUser->getKey()))->toBeNull()
-        ->and($provider->retrieveByToken($platformUser->getKey(), 'platform-token')?->getKey())->toBe($platformUser->getKey())
+        ->and($provider->retrieveByToken($tenantlessUser->getKey(), 'tenantless-token')?->getKey())->toBe($tenantlessUser->getKey())
         ->and($provider->retrieveByToken($tenantUser->getKey(), 'tenant-token'))->toBeNull()
-        ->and($provider->retrieveByToken($platformUser->getKey(), 'wrong-token'))->toBeNull();
+        ->and($provider->retrieveByToken($tenantlessUser->getKey(), 'wrong-token'))->toBeNull();
 });
 
 it('keeps web, console, and reseller sessions isolated', function (): void {
     $tenant = createTestTenant();
 
     $tenantUser = User::factory()->forTenant($tenant)->create();
-    $platformUser = User::factory()->create(['tenant_id' => null]);
+    $tenantlessUser = User::factory()->create(['tenant_id' => null]);
 
-    $this->actingAs($platformUser, 'console');
+    $this->actingAs($tenantlessUser, 'console');
 
-    expect(auth('console')->id())->toBe($platformUser->getKey())
+    expect(auth('console')->id())->toBe($tenantlessUser->getKey())
         ->and(auth('web')->check())->toBeFalse()
         ->and(auth('reseller')->check())->toBeFalse();
 
@@ -101,21 +101,21 @@ it('keeps web, console, and reseller sessions isolated', function (): void {
         ->and(auth('reseller')->check())->toBeFalse();
 });
 
-it('uses the platform provider with a per-panel broker for platform guards only', function (): void {
-    expect(auth('console')->getProvider())->toBeInstanceOf(PlatformUserProvider::class)
-        ->and(auth('reseller')->getProvider())->toBeInstanceOf(PlatformUserProvider::class)
-        ->and(auth('web')->getProvider())->not->toBeInstanceOf(PlatformUserProvider::class)
+it('uses the tenantless provider with a per-panel broker for tenantless guards only', function (): void {
+    expect(auth('console')->getProvider())->toBeInstanceOf(TenantlessUserProvider::class)
+        ->and(auth('reseller')->getProvider())->toBeInstanceOf(TenantlessUserProvider::class)
+        ->and(auth('web')->getProvider())->not->toBeInstanceOf(TenantlessUserProvider::class)
         ->and(config('auth.guards.console.provider'))->toBe('console')
         ->and(config('auth.guards.reseller.provider'))->toBe('reseller')
         ->and(config('auth.guards.web.provider'))->toBe('users')
-        ->and(config('auth.providers.console.driver'))->toBe('platform-eloquent')
-        ->and(config('auth.providers.reseller.driver'))->toBe('platform-eloquent')
+        ->and(config('auth.providers.console.driver'))->toBe('tenantless-eloquent')
+        ->and(config('auth.providers.reseller.driver'))->toBe('tenantless-eloquent')
         ->and(Filament::getPanel('console')->getAuthPasswordBroker())->toBe('console')
         ->and(Filament::getPanel('reseller')->getAuthPasswordBroker())->toBe('reseller')
         ->and(Filament::getPanel('admin')->getAuthPasswordBroker())->toBe('users');
 });
 
-it('resolves platform password resets to the platform user on duplicate emails', function (): void {
+it('resolves tenantless password resets to the tenantless user on duplicate emails', function (): void {
     $tenant = createTestTenant();
     $email = 'reset-shared@example.test';
 
@@ -125,16 +125,16 @@ it('resolves platform password resets to the platform user on duplicate emails',
         'password' => Hash::make('tenant-password'),
     ]);
 
-    $platformUser = User::factory()->create([
+    $tenantlessUser = User::factory()->create([
         'tenant_id' => null,
-        'username' => 'reset_platform',
+        'username' => 'reset_tenantless',
         'email' => $email,
-        'password' => Hash::make('platform-password'),
+        'password' => Hash::make('tenantless-password'),
     ]);
 
     $resolved = Password::broker('console')->getUser(['email' => $email]);
 
-    expect($resolved?->getKey())->toBe($platformUser->getKey());
+    expect($resolved?->getKey())->toBe($tenantlessUser->getKey());
 });
 
 it('delegates non-admin panel access to registered resolvers and denies unclaimed panels', function (): void {
@@ -158,21 +158,21 @@ it('delegates non-admin panel access to registered resolvers and denies unclaime
 | surface authenticating `web` (the admin panel, API Platform, the MCP
 | transport) runs behind `NeedsTenant`, and `User` carries `TenantScope`, so
 | the lookup is constrained to the current tenant — where
-| `users_active_email_unique` makes the email unambiguous and platform rows
+| `users_active_email_unique` makes the email unambiguous and tenantless rows
 | (`tenant_id IS NULL`) are out of reach. This test pins that invariant; it is
 | not a description of the provider.
 */
-it('resolves web credentials through the tenant context, never the platform row', function (): void {
+it('resolves web credentials through the tenant context, never the tenantless row', function (): void {
     $email = 'web-scope-shared@example.test';
 
     $tenant = createTestTenant();
 
-    // Create the platform user before a tenant is current, like a console user.
-    $platformUser = User::factory()->create([
+    // Create the tenantless user before a tenant is current, like a console user.
+    $tenantlessUser = User::factory()->create([
         'tenant_id' => null,
-        'username' => 'web_scope_platform',
+        'username' => 'web_scope_tenantless',
         'email' => $email,
-        'password' => Hash::make('platform-password'),
+        'password' => Hash::make('tenantless-password'),
     ]);
 
     $tenantUser = User::factory()->forTenant($tenant)->create([
@@ -186,7 +186,7 @@ it('resolves web credentials through the tenant context, never the platform row'
     $webUser = auth('web')->getProvider()->retrieveByCredentials(['email' => $email]);
 
     expect($webUser?->getKey())->toBe($tenantUser->getKey())
-        ->and($webUser?->getKey())->not->toBe($platformUser->getKey());
+        ->and($webUser?->getKey())->not->toBe($tenantlessUser->getKey());
 
     $adminMiddleware = Filament::getPanel('admin')->getMiddleware();
 

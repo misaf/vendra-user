@@ -15,7 +15,7 @@ use Spatie\Permission\Contracts\Role;
 final class CreateUserAction
 {
     /**
-     * A null tenant creates a platform user, such as a console or reseller user.
+     * A null tenant creates a tenantless user, such as a console or reseller user.
      */
     public function execute(
         ?Model $tenant,
@@ -27,13 +27,13 @@ final class CreateUserAction
     ): User {
         if ($tenant === null) {
             return DB::transaction(function () use ($username, $email, $password, $role, $isVerified): User {
-                $user = $this->createUser($username, $email, $password, $role, $isVerified, platformLevel: true);
+                $user = $this->createUser($username, $email, $password, $role, $isVerified, tenantless: true);
 
                 if ($user->hasTenant()) {
                     /*
                     | The tenant hook stamps the current tenant when there is
                     | one (tests, callers inside tenant middleware). A
-                    | platform-level identity must never belong to a tenant,
+                    | tenantless identity must never belong to a tenant,
                     | so the stamp is reverted on the same transaction.
                     */
                     $user->forceFill(['tenant_id' => null])->save();
@@ -58,11 +58,11 @@ final class CreateUserAction
         string $password,
         Role|string|null $role,
         bool $isVerified,
-        bool $platformLevel = false,
+        bool $tenantless = false,
     ): User {
         /** @var User $user */
         $user = User::query()->create([
-            ...($platformLevel ? ['tenant_id' => null] : []),
+            ...($tenantless ? ['tenant_id' => null] : []),
             'username' => $username,
             'email' => $email,
             'email_verified_at' => $isVerified ? Date::now() : null,

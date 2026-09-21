@@ -70,17 +70,17 @@ it('updates administrator credentials through domain actions', function (): void
         ->and($administrator->email_verified_at)->not->toBeNull();
 });
 
-it('updates the password of a platform user that holds no tenant', function (): void {
-    $platformUser = User::factory()->create(['tenant_id' => null]);
-    $rememberToken = $platformUser->getRememberToken();
+it('updates the password of a tenantless user that holds no tenant', function (): void {
+    $tenantlessUser = User::factory()->create(['tenant_id' => null]);
+    $rememberToken = $tenantlessUser->getRememberToken();
 
-    resolve(UpdateUserPasswordAction::class)->execute($platformUser, 'NewPassword123');
+    resolve(UpdateUserPasswordAction::class)->execute($tenantlessUser, 'NewPassword123');
 
-    $platformUser->refresh();
+    $tenantlessUser->refresh();
 
-    expect($platformUser->tenant_id)->toBeNull()
-        ->and(Hash::check('NewPassword123', $platformUser->password))->toBeTrue()
-        ->and($platformUser->getRememberToken())->not->toBe($rememberToken);
+    expect($tenantlessUser->tenant_id)->toBeNull()
+        ->and(Hash::check('NewPassword123', $tenantlessUser->password))->toBeTrue()
+        ->and($tenantlessUser->getRememberToken())->not->toBe($rememberToken);
 });
 
 it('prevents the last enabled administrator from being demoted removed or disabled', function (): void {

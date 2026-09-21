@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
 use Misaf\VendraSupport\Tenancy\TenantSeeders;
-use Misaf\VendraUser\Auth\PlatformUserProvider;
+use Misaf\VendraUser\Auth\TenantlessUserProvider;
 use Misaf\VendraUser\Console\Commands\AssignAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
 use Misaf\VendraUser\Console\Commands\SeedCommand;
@@ -64,18 +64,18 @@ final class UserServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         /*
-        | Platform guards (console, reseller) authenticate the same canonical
+        | Tenantless guards (console, reseller) authenticate the same canonical
         | User but must never resolve a tenant row when emails collide. The
         | driver is registered here so the per-panel `auth.providers.console`
         | and `auth.providers.reseller` entries work wherever the
         | console/reseller packages point their guards at them.
         */
-        Auth::provider('platform-eloquent', static fn ($app, array $config): PlatformUserProvider => new PlatformUserProvider(Arr::get($app, 'hash'), Arr::get($config, 'model')));
+        Auth::provider('tenantless-eloquent', static fn ($app, array $config): TenantlessUserProvider => new TenantlessUserProvider(Arr::get($app, 'hash'), Arr::get($config, 'model')));
 
         /*
         | `users` is deliberately absent from the TenantTableRegistry: a null
         | tenant id is a legitimate end state here (console users and
-        | reseller users are platform-level identities), so the
+        | reseller users are tenantless identities), so the
         | `vendra-tenant:enable` retrofit must never backfill those rows or
         | force the column NOT NULL.
         */

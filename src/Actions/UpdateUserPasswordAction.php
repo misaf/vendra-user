@@ -33,7 +33,7 @@ final readonly class UpdateUserPasswordAction
         $tenant = $user->tenant()->first();
 
         /*
-        | Platform-level identities (console and reseller users) hold no
+        | Tenantless identities (console and reseller users) hold no
         | tenant, so there is no tenant context to enter for them.
         */
         if ($tenant === null) {

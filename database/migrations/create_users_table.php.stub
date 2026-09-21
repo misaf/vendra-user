@@ -53,7 +53,7 @@ return new class extends Migration
                 ->nullable()
                 ->virtualAs('CASE WHEN deleted_at IS NULL THEN username ELSE NULL END');
             /*
-            | Platform-level identities (console users, reseller users)
+            | Tenantless identities (console users, reseller users)
             | carry a null tenant id, where the tenant-scoped uniques below
             | stop discriminating. These guards keep emails and usernames
             | globally unique for those rows only. Without a tenant provider
