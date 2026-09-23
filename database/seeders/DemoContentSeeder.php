@@ -7,11 +7,11 @@ namespace Misaf\VendraUser\Database\Seeders;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Misaf\VendraSupport\Tenancy\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Database\Factories\UserFactory;
 use Misaf\VendraUser\Models\User;
+use Misaf\VendraUser\Support\PasswordGenerator;
 
 final class DemoContentSeeder extends BaseDemoContentSeeder
 {
@@ -83,7 +83,7 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
             tenant: $tenant,
             username: Arr::get($data, 'username'),
             email: Arr::get($data, 'email'),
-            password: Str::password(32),
+            password: PasswordGenerator::generate(),
             role: Arr::get($data, 'role', null),
             isVerified: ! array_key_exists('email_verified_at', $data) || Arr::get($data, 'email_verified_at') !== null,
         );
