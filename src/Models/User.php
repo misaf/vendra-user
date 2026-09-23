@@ -26,6 +26,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
 use Misaf\VendraPermission\Enums\RoleEnum;
@@ -113,6 +114,26 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
         }
 
         return $query->whereNull($this->qualifyColumn(TenantSchema::column()));
+    }
+
+    /**
+     * Limit the query to the user every supplied identifier names.
+     *
+     * With no identifier the query would match every user, so one is required.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     *
+     * @throws InvalidArgumentException
+     */
+    #[Scope]
+    protected function identifiedBy(Builder $query, ?string $email = null, ?string $username = null): Builder
+    {
+        throw_if($email === null && $username === null, InvalidArgumentException::class, 'An email or a username is required to identify a user.');
+
+        return $query
+            ->when($email !== null, fn (Builder $query): Builder => $query->where($this->qualifyColumn('email'), $email))
+            ->when($username !== null, fn (Builder $query): Builder => $query->where($this->qualifyColumn('username'), $username));
     }
 
     public function canAccessPanel(Panel $panel): bool
