@@ -96,8 +96,7 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     }
 
     /**
-     * Limit the query to tenantless users — the identities that belong to no
-     * tenant, such as console and reseller users.
+     * Limit the query to tenantless users, such as console and reseller users.
      *
      * A tenant user may hold the same email as a tenantless user, so the tenant
      * scopes come off rather than being left to the ambient tenant context.
@@ -138,8 +137,6 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     }
 
     /**
-     * Limit the query to users who verified their email.
-     *
      * @param  Builder<self>  $query
      * @return Builder<self>
      */
@@ -150,8 +147,6 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     }
 
     /**
-     * Limit the query to users who have not verified their email.
-     *
      * @param  Builder<self>  $query
      * @return Builder<self>
      */
@@ -165,8 +160,8 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
      * Limit the query to users holding the given tenant's admin role.
      *
      * The role is matched on its tenant column rather than through the ambient
-     * tenant context, so the console — which has no current tenant — gets the
-     * same answer as the tenant's own panel.
+     * tenant context, so the console gets the same answer as the tenant's own
+     * panel even though it has no current tenant.
      *
      * @param  Builder<self>  $query
      * @return Builder<self>
