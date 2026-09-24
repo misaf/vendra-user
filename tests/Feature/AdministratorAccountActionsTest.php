@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Misaf\VendraSupport\Contracts\TenantResolver;
+use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Actions\AddTenantAdministratorAction;
 use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Actions\DemoteTenantAdministratorAction;
@@ -46,6 +47,23 @@ it('adds a tenant administrator with a hashed password and membership', function
         ->and(Hash::check('SecurePassword123', $administrator->password))->toBeTrue()
         ->and($administrator->tenants()->whereKey($tenant->getKey())->exists())->toBeTrue()
         ->and($administrator->hasRole(Config::string('vendra-permission.admin_role')))->toBeTrue();
+});
+
+it('assigns the admin role of the given tenant when several tenants have one', function (): void {
+    $firstTenant = createTestTenant();
+    $secondTenant = createTestTenant();
+    prepareAdministratorRole($firstTenant);
+    prepareAdministratorRole($secondTenant);
+
+    $administrator = resolve(AddTenantAdministratorAction::class)->execute(
+        $secondTenant,
+        'second_admin',
+        'second@example.com',
+        'SecurePassword123',
+    );
+
+    expect($administrator->roles()->withoutGlobalScopes()->pluck('roles.'.TenantSchema::column())->all())
+        ->toBe([$secondTenant->getKey()]);
 });
 
 it('updates administrator credentials through domain actions', function (): void {

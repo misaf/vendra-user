@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Filament\Widgets;
 
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Misaf\VendraSupport\Filament\Tables\Columns\CreatedAtColumn;
+use Misaf\VendraUser\Filament\Tables\Columns\EmailColumn;
+use Misaf\VendraUser\Filament\Tables\Columns\EmailVerifiedAtColumn;
+use Misaf\VendraUser\Filament\Tables\Columns\UsernameColumn;
 use Misaf\VendraUser\Models\User;
 
 final class LatestUsersWidget extends BaseWidget
@@ -28,26 +29,13 @@ final class LatestUsersWidget extends BaseWidget
             ->heading(__('vendra-user::navigation.recent_users'))
             ->query(User::query()->latest()->limit(5))
             ->columns([
-                TextColumn::make('username')
-                    ->label(__('vendra-user::attributes.username'))
-                    ->icon(Heroicon::User),
+                UsernameColumn::make(),
 
-                TextColumn::make('email')
-                    ->label(__('vendra-user::attributes.email'))
-                    ->icon(Heroicon::Envelope)
-                    ->searchable(),
+                EmailColumn::make(),
 
-                TextColumn::make('email_verified_at')
-                    ->alignCenter()
-                    ->badge()
-                    ->extraCellAttributes(['dir' => 'ltr'])
+                EmailVerifiedAtColumn::make()
                     ->label(__('vendra-user::attributes.verified_at'))
-                    ->sinceTooltip()
-                    ->when(
-                        app()->isLocale('fa'),
-                        fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                        fn (TextColumn $column) => $column->dateTime('Y-m-d H:i')
-                    ),
+                    ->toggleable(false),
 
                 CreatedAtColumn::make()
                     ->alignCenter()

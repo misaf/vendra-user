@@ -23,7 +23,7 @@ final readonly class AddTenantAdministratorAction
         string $password,
         bool $verified = true,
     ): User {
-        return DB::transaction(function () use ($tenant, $username, $email, $password, $verified): User {
+        return DB::transaction(fn (): User => $this->guard->execute($tenant, function () use ($tenant, $username, $email, $password, $verified): User {
             $user = $this->createUserAction->execute(
                 tenant: $tenant,
                 username: $username,
@@ -36,6 +36,6 @@ final readonly class AddTenantAdministratorAction
             $user->tenants()->syncWithoutDetaching([$tenant->getKey()]);
 
             return $user;
-        });
+        }));
     }
 }

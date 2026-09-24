@@ -15,8 +15,6 @@ use Filament\Tables\Columns\SpatieTagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
-use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
-use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
@@ -24,6 +22,12 @@ use Misaf\VendraSupport\Filament\Tables\Columns\CreatedAtColumn;
 use Misaf\VendraSupport\Filament\Tables\Columns\RowIndexColumn;
 use Misaf\VendraSupport\Filament\Tables\Columns\UpdatedAtColumn;
 use Misaf\VendraTagger\Filament\Tables\Columns\ModelTagsColumn;
+use Misaf\VendraUser\Filament\Tables\Columns\EmailColumn;
+use Misaf\VendraUser\Filament\Tables\Columns\EmailVerifiedAtColumn;
+use Misaf\VendraUser\Filament\Tables\Columns\UsernameColumn;
+use Misaf\VendraUser\Filament\Tables\Filters\QueryBuilder\Constraints\EmailConstraint;
+use Misaf\VendraUser\Filament\Tables\Filters\QueryBuilder\Constraints\EmailVerifiedAtConstraint;
+use Misaf\VendraUser\Filament\Tables\Filters\QueryBuilder\Constraints\UsernameConstraint;
 use Misaf\VendraUser\Models\User;
 
 final class UserTable
@@ -36,33 +40,16 @@ final class UserTable
         $columns = [
             RowIndexColumn::make(),
 
-            TextColumn::make('username')
-                ->label(__('vendra-user::attributes.username'))
-                ->icon(Heroicon::User)
-                ->searchable(isGlobal: true),
+            UsernameColumn::make(),
 
-            TextColumn::make('email')
-                ->label(__('vendra-user::attributes.email'))
-                ->icon(Heroicon::Envelope)
-                ->searchable(isGlobal: true),
+            EmailColumn::make(),
 
             TextColumn::make('roles.name')
                 ->badge()
                 ->label(__('vendra-permission::navigation.role'))
                 ->separator(','),
 
-            TextColumn::make('email_verified_at')
-                ->alignCenter()
-                ->badge()
-                ->extraCellAttributes(['dir' => 'ltr'])
-                ->label(__('vendra-user::attributes.email_verified_at'))
-                ->sinceTooltip()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->when(
-                    app()->isLocale('fa'),
-                    fn (TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
-                    fn (TextColumn $column) => $column->dateTime('Y-m-d H:i'),
-                ),
+            EmailVerifiedAtColumn::make(),
 
             CreatedAtColumn::make(),
 
@@ -85,12 +72,9 @@ final class UserTable
                     TrashedFilter::make(),
                     QueryBuilder::make()
                         ->constraints([
-                            TextConstraint::make('username')
-                                ->label(__('vendra-user::attributes.username')),
-                            TextConstraint::make('email')
-                                ->label(__('vendra-user::attributes.email')),
-                            BooleanConstraint::make('email_verified_at')
-                                ->label(__('vendra-user::attributes.email_verified_at')),
+                            UsernameConstraint::make(),
+                            EmailConstraint::make(),
+                            EmailVerifiedAtConstraint::make(),
                         ]),
                 ],
                 layout: FiltersLayout::AboveContentCollapsible,

@@ -25,6 +25,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Laravel\Pennant\Concerns\HasFeatures;
@@ -158,6 +159,26 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     protected function unverified(Builder $query): Builder
     {
         return $query->whereNull($this->qualifyColumn('email_verified_at'));
+    }
+
+    /**
+     * Limit the query to users holding the given tenant's admin role.
+     *
+     * The role is matched on its tenant column rather than through the ambient
+     * tenant context, so the console — which has no current tenant — gets the
+     * same answer as the tenant's own panel.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    #[Scope]
+    protected function administratorOf(Builder $query, Model $tenant): Builder
+    {
+        return $query->whereHas('roles', fn (Builder $roles): Builder => $roles
+            ->withoutGlobalScopes()
+            ->where($roles->qualifyColumn(TenantSchema::column()), $tenant->getKey())
+            ->where($roles->qualifyColumn('name'), Config::string('vendra-permission.admin_role'))
+            ->where($roles->qualifyColumn('guard_name'), 'web'));
     }
 
     public function canAccessPanel(Panel $panel): bool
