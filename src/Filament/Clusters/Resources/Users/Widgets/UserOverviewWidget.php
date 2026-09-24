@@ -28,8 +28,8 @@ final class UserOverviewWidget extends StatsOverviewWidget
         $startDate = now()->startOfWeek();
         $endDate = now()->endOfWeek();
         $users = User::query();
-        $verifiedUsers = User::query()->whereNotNull('email_verified_at');
-        $unverifiedUsers = User::query()->whereNull('email_verified_at');
+        $verifiedUsers = User::query()->verified();
+        $unverifiedUsers = User::query()->unverified();
         $userTrend = Trend::query(clone $users)->between($startDate, $endDate)->perDay()->count();
         $verifiedUserTrend = Trend::query(clone $verifiedUsers)->between($startDate, $endDate)->perDay()->count();
         $unverifiedUserTrend = Trend::query(clone $unverifiedUsers)->between($startDate, $endDate)->perDay()->count();

@@ -136,6 +136,30 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
             ->when($username !== null, fn (Builder $query): Builder => $query->where($this->qualifyColumn('username'), $username));
     }
 
+    /**
+     * Limit the query to users who verified their email.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    #[Scope]
+    protected function verified(Builder $query): Builder
+    {
+        return $query->whereNotNull($this->qualifyColumn('email_verified_at'));
+    }
+
+    /**
+     * Limit the query to users who have not verified their email.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    #[Scope]
+    protected function unverified(Builder $query): Builder
+    {
+        return $query->whereNull($this->qualifyColumn('email_verified_at'));
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {

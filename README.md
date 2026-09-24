@@ -86,6 +86,9 @@ To find a user by an email, a username or both, chain the `identifiedBy()` scope
 user every given identifier names, or null when they name different users. It
 throws without an identifier rather than matching every user.
 
+The `verified()` and `unverified()` scopes split users on `email_verified_at`;
+the user overview widget counts through them.
+
 ## Optional tags
 
 When Tagger is installed, the user form and table expose tags automatically. User imports neither Vendra Tagger nor Spatie Tags; the integration is resolved through Support.
