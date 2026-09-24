@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use LogicException;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraUser\Actions\CreateUserAction;
@@ -40,6 +41,14 @@ final class CreateUserCommand extends Command
         $tenant = $this->resolveTenant();
 
         if (! $tenant) {
+            return self::FAILURE;
+        }
+
+        $tenantKey = $tenant->getKey();
+
+        if (! is_int($tenantKey) && ! is_string($tenantKey)) {
+            $this->error('The tenant has no usable key.');
+
             return self::FAILURE;
         }
 
@@ -81,17 +90,16 @@ final class CreateUserCommand extends Command
 
         if (
             User::query()
-                ->where(TenantSchema::column(), $tenant->getKey())
+                ->where(TenantSchema::column(), $tenantKey)
                 ->where('username', $username)
                 ->exists()
         ) {
-            $this->error("A user with username [{$username}] already exists for tenant [{$tenant->getKey()}].");
+            $this->error("A user with username [{$username}] already exists for tenant [{$tenantKey}].");
 
             return self::FAILURE;
         }
 
         try {
-            /** @var Role $resolvedRole */
             $resolvedRole = resolve(TenantResolver::class)->execute(
                 $tenant,
                 fn (): Role => $this->roleModelClass()::findByName($role, $guardName),
@@ -105,7 +113,7 @@ final class CreateUserCommand extends Command
                 role: $resolvedRole,
             );
         } catch (RoleDoesNotExist) {
-            $this->error("Role [{$role}] with guard [{$guardName}] not found for tenant [{$tenant->getKey()}].");
+            $this->error("Role [{$role}] with guard [{$guardName}] not found for tenant [{$tenantKey}].");
 
             return self::FAILURE;
         }
@@ -155,6 +163,10 @@ final class CreateUserCommand extends Command
      */
     private function roleModelClass(): string
     {
-        return resolve(PermissionRegistrar::class)->getRoleClass();
+        $roleModelClass = resolve(PermissionRegistrar::class)->getRoleClass();
+
+        throw_unless(is_a($roleModelClass, Role::class, true), LogicException::class, "The configured role model [{$roleModelClass}] must implement the role contract.");
+
+        return $roleModelClass;
     }
 }

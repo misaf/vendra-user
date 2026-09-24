@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Misaf\VendraUser\Auth;
 
 use Illuminate\Auth\EloquentUserProvider;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
@@ -17,14 +16,11 @@ use Misaf\VendraSupport\Tenancy\TenantSchema;
 final class TenantlessUserProvider extends EloquentUserProvider
 {
     /**
-     * @template TModel of Model
-     *
-     * @param  TModel|null  $model
-     * @return Builder<TModel>
+     * @param  Model|null  $model
+     * @return Builder<Model>
      */
     protected function newModelQuery($model = null)
     {
-        /** @var Model&Authenticatable $modelInstance */
         $modelInstance = $model ?? $this->createModel();
 
         $query = parent::newModelQuery($modelInstance);

@@ -15,15 +15,17 @@ final readonly class RemoveTenantAdministratorAction
 
     public function execute(Model $tenant, User $user): void
     {
-        DB::transaction(fn (): mixed => $this->guard->execute($tenant, function () use ($tenant, $user): void {
-            $this->guard->assertBelongsToTenant($user, $tenant);
-            $this->guard->assertMayRemoveAdministrator($user, $tenant);
+        DB::transaction(function () use ($tenant, $user): void {
+            $this->guard->execute($tenant, function () use ($tenant, $user): void {
+                $this->guard->assertBelongsToTenant($user, $tenant);
+                $this->guard->assertMayRemoveAdministrator($user, $tenant);
 
-            if ($user->hasRole($this->guard->role())) {
-                $user->removeRole($this->guard->role());
-            }
+                if ($user->hasRole($this->guard->role())) {
+                    $user->removeRole($this->guard->role());
+                }
 
-            $user->tenants()->detach($tenant->getKey());
-        }));
+                $user->tenants()->detach($tenant->getKey());
+            });
+        });
     }
 }

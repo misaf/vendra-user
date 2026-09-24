@@ -9,7 +9,6 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use LogicException;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraSupport\Tenancy\Scopes\TeamScope;
 use Misaf\VendraSupport\Tenancy\Scopes\TenantScope;
@@ -70,16 +69,12 @@ final class AssignAdminRoleCommand extends Command implements PromptsForMissingI
             return self::FAILURE;
         }
 
-        $exitCode = $tenantResolver->execute(
+        return $tenantResolver->execute(
             $tenant,
             fn (): int => $this->assignAdminRole($userId, function (User $user) use ($tenant): void {
                 $this->promoteTenantAdministratorAction->execute($tenant, $user);
             }),
         );
-
-        throw_unless(is_int($exitCode), LogicException::class, 'The tenant resolver returned an invalid command exit code.');
-
-        return $exitCode;
     }
 
     /**

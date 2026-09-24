@@ -29,9 +29,9 @@ final class CreateUser extends CreateRecord
         return DB::transaction(function () use ($data): Model {
             $user = resolve(CreateUserAction::class)->execute(
                 tenant: Filament::getTenant(),
-                username: (string) Arr::get($data, 'username'),
-                email: (string) Arr::get($data, 'email'),
-                password: (string) Arr::get($data, 'password'),
+                username: Arr::string($data, 'username'),
+                email: Arr::string($data, 'email'),
+                password: Arr::string($data, 'password'),
                 isVerified: false,
             );
 

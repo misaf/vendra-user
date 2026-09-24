@@ -19,6 +19,12 @@ final readonly class TenantAdministratorGuard
 {
     public function __construct(private TenantResolver $tenantResolver) {}
 
+    /**
+     * @template TReturn
+     *
+     * @param  callable(): TReturn  $callback
+     * @return TReturn
+     */
     public function execute(Model $tenant, callable $callback): mixed
     {
         return $this->tenantResolver->execute($tenant, function () use ($tenant, $callback): mixed {
@@ -33,7 +39,7 @@ final readonly class TenantAdministratorGuard
     public function assertBelongsToTenant(User $user, Model $tenant): void
     {
         if ($user->tenant()->whereKey($tenant->getKey())->doesntExist()) {
-            throw new LogicException("User [{$user->id}] does not belong to tenant [{$tenant->getKey()}].");
+            throw new LogicException("User [{$user->id}] does not belong to tenant [{$this->tenantKey($tenant)}].");
         }
     }
 
@@ -50,7 +56,7 @@ final readonly class TenantAdministratorGuard
             ->count();
 
         if ($administratorCount <= 1) {
-            throw LastAdministratorException::forTenant($tenant->getKey());
+            throw LastAdministratorException::forTenant($this->tenantKey($tenant));
         }
     }
 
@@ -71,5 +77,14 @@ final readonly class TenantAdministratorGuard
         throw_unless(is_a($roleModelClass, Role::class, true), LogicException::class, "The configured role model [{$roleModelClass}] must implement the role contract.");
 
         return $roleModelClass::findByName($this->roleName(), 'web');
+    }
+
+    private function tenantKey(Model $tenant): int|string
+    {
+        $key = $tenant->getKey();
+
+        throw_unless(is_int($key) || is_string($key), LogicException::class, 'A tenant must have a key.');
+
+        return $key;
     }
 }

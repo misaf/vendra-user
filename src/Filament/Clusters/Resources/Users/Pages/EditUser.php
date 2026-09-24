@@ -40,10 +40,11 @@ final class EditUser extends EditRecord
      */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $password = Arr::pull($data, 'password');
+        $password = Arr::get($data, 'password');
+        $attributes = array_diff_key($data, ['password' => true]);
 
-        return DB::transaction(function () use ($record, $data, $password): Model {
-            $record->update($data);
+        return DB::transaction(function () use ($record, $attributes, $password): Model {
+            $record->update($attributes);
 
             if (is_string($password) && $password !== '') {
                 resolve(UpdateUserPasswordAction::class)->execute($record, $password);

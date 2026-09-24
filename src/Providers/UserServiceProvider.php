@@ -7,6 +7,8 @@ namespace Misaf\VendraUser\Providers;
 use Composer\InstalledVersions;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -70,7 +72,7 @@ final class UserServiceProvider extends PackageServiceProvider
         | and `auth.providers.reseller` entries work wherever the
         | console/reseller packages point their guards at them.
         */
-        Auth::provider('tenantless-eloquent', static fn ($app, array $config): TenantlessUserProvider => new TenantlessUserProvider(Arr::get($app, 'hash'), Arr::get($config, 'model')));
+        Auth::provider('tenantless-eloquent', static fn (Application $app, array $config): TenantlessUserProvider => new TenantlessUserProvider($app->make(Hasher::class), Arr::string($config, 'model')));
 
         /*
         | `users` is deliberately absent from the TenantTableRegistry: a null
