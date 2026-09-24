@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Filament\Tables\Columns;
 
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 
 final class UsernameColumn extends TextColumn
@@ -20,7 +19,6 @@ final class UsernameColumn extends TextColumn
 
         $this
             ->label(__('vendra-user::attributes.username'))
-            ->icon(Heroicon::User)
             ->searchable();
     }
 }
