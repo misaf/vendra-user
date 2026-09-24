@@ -75,17 +75,17 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
      */
     private function handleSeedFixtureRecord(Model $tenant, array $data): void
     {
-        if (User::query()->where('email', Arr::get($data, 'email'))->exists()) {
+        if (User::query()->where('email', Arr::string($data, 'email'))->exists()) {
             return;
         }
 
         $this->createUserAction->execute(
             tenant: $tenant,
-            username: Arr::get($data, 'username'),
-            email: Arr::get($data, 'email'),
+            username: Arr::string($data, 'username'),
+            email: Arr::string($data, 'email'),
             password: PasswordGenerator::generate(),
-            role: Arr::get($data, 'role', null),
-            isVerified: ! array_key_exists('email_verified_at', $data) || Arr::get($data, 'email_verified_at') !== null,
+            role: Arr::has($data, 'role') ? Arr::string($data, 'role') : null,
+            isVerified: ! Arr::has($data, 'email_verified_at') || Arr::get($data, 'email_verified_at') !== null,
         );
     }
 
