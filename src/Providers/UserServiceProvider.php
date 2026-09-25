@@ -45,7 +45,7 @@ final class UserServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_users_table',
             ])
-            ->hasCommands(
+            ->hasConsoleCommands(
                 AssignAdminRoleCommand::class,
                 CreateUserCommand::class,
                 SeedCommand::class,
@@ -86,7 +86,7 @@ final class UserServiceProvider extends PackageServiceProvider
         | `vendra-tenant:enable` retrofit must never backfill those rows or
         | force the column NOT NULL.
         */
-        $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
+        $this->app->make(TenantSeeders::class)->register(SeedCommand::class, priority: 20);
         $this->app->make(TenantUsageRegistry::class)->register(
             PlanLimit::StaffPerStore,
             // Staff are the store's users who hold a role; customers hold none.

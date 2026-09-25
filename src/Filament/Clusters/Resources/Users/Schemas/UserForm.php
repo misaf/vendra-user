@@ -11,6 +11,9 @@ use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 use Misaf\VendraSupport\Capabilities\TagIntegration;
+use Misaf\VendraSupport\Contracts\TenantEntitlements;
+use Misaf\VendraSupport\Enums\PlanLimit;
+use Misaf\VendraSupport\Exceptions\EntitlementExceededException;
 use Misaf\VendraSupport\Filament\Actions\GeneratePasswordAction;
 use Misaf\VendraSupport\Tenancy\TenantAwareness;
 use Misaf\VendraTagger\Filament\Forms\Components\ModelTagsInput;
@@ -75,6 +78,14 @@ final class UserForm
 
             Select::make('roles')
                 ->afterStateUpdated(fn (Livewire $livewire) => $livewire->validateOnly('data.roles'))
+                ->disabled(fn (?User $record): bool => self::staffLimitReached($record))
+                ->hint(fn (?User $record): ?string => self::staffLimitReached($record)
+                    ? EntitlementExceededException::limitReached(
+                        PlanLimit::StaffPerStore,
+                        resolve(TenantEntitlements::class)->limit(PlanLimit::StaffPerStore) ?? 0,
+                    )->getMessage()
+                    : null)
+                ->hintColor('danger')
                 ->label(__('vendra-permission::navigation.role'))
                 ->live()
                 ->multiple()
@@ -101,5 +112,18 @@ final class UserForm
 
         return $schema
             ->components($components);
+    }
+
+    /**
+     * Whether giving this user a role would take the store past its staff limit.
+     * A user who already holds a role is staff already and keeps the field.
+     */
+    private static function staffLimitReached(?User $record): bool
+    {
+        if ($record instanceof User && $record->roles()->exists()) {
+            return false;
+        }
+
+        return ! resolve(TenantEntitlements::class)->canAdd(PlanLimit::StaffPerStore);
     }
 }

@@ -11,6 +11,7 @@ use Misaf\VendraSupport\Exceptions\EntitlementExceededException;
 use Misaf\VendraSupport\Tenancy\TenantUsageRegistry;
 use Misaf\VendraUser\Actions\AddTenantAdministratorAction;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\CreateUser;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\EditUser;
 use Misaf\VendraUser\Models\User;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -85,4 +86,20 @@ it('refuses a user with a role on the create page past the staff limit but still
         ->assertHasNoFormErrors();
 
     expect(User::query()->where('email', 'customer@gmail.com')->exists())->toBeTrue();
+});
+
+it('disables the roles field at the staff limit except for existing staff', function (): void {
+    capStaffAtCurrentUsage();
+
+    livewire(CreateUser::class)
+        ->assertFormFieldDisabled('roles')
+        ->assertSee(staffLimitMessage());
+
+    livewire(EditUser::class, ['record' => User::factory()->create()->getRouteKey()])
+        ->assertFormFieldDisabled('roles');
+
+    $staff = User::query()->whereHas('roles')->firstOrFail();
+
+    livewire(EditUser::class, ['record' => $staff->getRouteKey()])
+        ->assertFormFieldEnabled('roles');
 });
