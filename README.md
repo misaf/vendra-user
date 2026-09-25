@@ -112,6 +112,13 @@ never challenges, whatever the user has set up.
 codes, for someone who lost both. In tests, `User::factory()->withAppAuthentication()`
 creates a user who already has an authenticator.
 
+## Profile page
+
+Every panel registers `Filament\Pages\Auth\EditProfile` with
+`->profile(EditProfile::class)`. Filament's default page edits a `name` users do
+not have; this one shows the username and email read-only and changes the
+password through `UpdateUserPasswordAction`, keeping the session signed in.
+
 ## Optional tags
 
 When Tagger is installed, the user form and table expose tags automatically. User imports neither Vendra Tagger nor Spatie Tags; the integration is resolved through Support.
