@@ -9,13 +9,18 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Misaf\VendraSupport\Contracts\TenantResolver;
+use Misaf\VendraSupport\Enums\PlanLimit;
 use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
 use Misaf\VendraSupport\Tenancy\TenantSeeders;
+use Misaf\VendraSupport\Tenancy\TenantUsageRegistry;
 use Misaf\VendraUser\Auth\TenantlessUserProvider;
 use Misaf\VendraUser\Console\Commands\AssignAdminRoleCommand;
 use Misaf\VendraUser\Console\Commands\CreateUserCommand;
@@ -82,6 +87,16 @@ final class UserServiceProvider extends PackageServiceProvider
         | force the column NOT NULL.
         */
         $this->app->make(TenantSeeders::class)->register('vendra-user:seed', priority: 20);
+        $this->app->make(TenantUsageRegistry::class)->register(
+            PlanLimit::StaffPerStore,
+            // Staff are the store's users who hold a role; customers hold none.
+            fn (Model $tenant): int => User::query()
+                ->withoutGlobalScopes()
+                ->where(resolve(TenantResolver::class)->foreignKey(), $tenant->getKey())
+                ->whereNull((new User)->getQualifiedDeletedAtColumn())
+                ->whereHas('roles', fn (Builder $query): Builder => $query->withoutGlobalScopes())
+                ->count(),
+        );
 
         AboutCommand::add('Vendra User', fn (): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-user')]);
 

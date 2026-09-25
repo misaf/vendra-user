@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Models;
 
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Models\Contracts\HasTenants;
@@ -53,6 +57,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $password
  * @property string|null $password_fingerprint
  * @property string|null $remember_token
+ * @property string|null $app_authentication_secret
+ * @property list<string>|null $app_authentication_recovery_codes
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
@@ -60,7 +66,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[Fillable(['tenant_id', 'username', 'email', 'email_verified_at', 'password', 'password_fingerprint'])]
 #[Hidden(['tenant_id', 'password', 'password_fingerprint', 'remember_token', 'active_email_guard'])]
 #[UseFactory(UserFactory::class)]
-final class User extends Authenticatable implements FilamentUser, HasLocalePreference, HasMedia, HasName, HasTenants, MustVerifyEmail, ShouldLogActivity
+final class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasLocalePreference, HasMedia, HasName, HasTenants, MustVerifyEmail, ShouldLogActivity
 {
     use BelongsToTenant;
     use HasDefaultMediaConversions, InteractsWithMedia {
@@ -73,10 +79,17 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     use HasFeatures;
     use HasOptionalTags;
     use HasRoles;
+    use InteractsWithAppAuthentication;
+    use InteractsWithAppAuthenticationRecovery;
     use Notifiable;
     use SoftDeletes;
 
     public const string TAG_TYPE = 'user';
+
+    protected $attributes = [
+        'app_authentication_secret' => null,
+        'app_authentication_recovery_codes' => null,
+    ];
 
     /**
      * @return array<string, string>
@@ -195,6 +208,11 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     public function getFilamentName(): string
     {
         return $this->username ?? $this->email;
+    }
+
+    public function hasAppAuthentication(): bool
+    {
+        return filled($this->app_authentication_secret);
     }
 
     /**

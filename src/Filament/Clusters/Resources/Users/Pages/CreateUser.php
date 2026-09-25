@@ -6,19 +6,40 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages;
 
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Misaf\VendraUser\Actions\CreateUserAction;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\Concerns\EnforcesStaffLimit;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\UserResource;
 
 final class CreateUser extends CreateRecord
 {
+    use EnforcesStaffLimit;
+
     protected static string $resource = UserResource::class;
 
     public function getBreadcrumb(): string
     {
         return self::$breadcrumb ?? __('filament-panels::resources/pages/create-record.breadcrumb').' '.__('vendra-user::navigation.user');
+    }
+
+    /**
+     * @throws Halt
+     */
+    protected function beforeCreate(): void
+    {
+        if ($this->assignsRoles()) {
+            $this->assertRoomForStaff();
+        }
+    }
+
+    protected function afterCreate(): void
+    {
+        if ($this->assignsRoles()) {
+            $this->recordStaffAdded();
+        }
     }
 
     /**

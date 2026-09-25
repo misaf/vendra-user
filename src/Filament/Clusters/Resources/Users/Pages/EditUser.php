@@ -7,16 +7,22 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Misaf\VendraUser\Actions\UpdateUserPasswordAction;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\Concerns\EnforcesStaffLimit;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\UserResource;
 use Misaf\VendraUser\Models\User;
 
 final class EditUser extends EditRecord
 {
+    use EnforcesStaffLimit;
+
     protected static string $resource = UserResource::class;
+
+    private bool $becomesStaff = false;
 
     public function getBreadcrumb(): string
     {
@@ -32,6 +38,27 @@ final class EditUser extends EditRecord
             ViewAction::make(),
             DeleteAction::make(),
         ];
+    }
+
+    /**
+     * @throws Halt
+     */
+    protected function beforeSave(): void
+    {
+        $record = $this->getRecord();
+
+        $this->becomesStaff = $this->assignsRoles() && $record instanceof User && $record->roles()->doesntExist();
+
+        if ($this->becomesStaff) {
+            $this->assertRoomForStaff();
+        }
+    }
+
+    protected function afterSave(): void
+    {
+        if ($this->becomesStaff) {
+            $this->recordStaffAdded();
+        }
     }
 
     /**

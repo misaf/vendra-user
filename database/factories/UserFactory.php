@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Database\Factories;
 
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +53,13 @@ final class UserFactory extends Factory
         return $this->afterCreating(function (User $user) use ($role): void {
             $user->assignRole($role);
         });
+    }
+
+    public function withAppAuthentication(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'app_authentication_secret' => AppAuthentication::make()->generateSecret(),
+        ]);
     }
 
     public function unverified(): static
