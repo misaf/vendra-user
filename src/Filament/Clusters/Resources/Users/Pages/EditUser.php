@@ -6,21 +6,28 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Misaf\VendraUser\Actions\DemoteTenantAdministratorAction;
 use Misaf\VendraUser\Actions\UpdateUserPasswordAction;
+use Misaf\VendraUser\Exceptions\LastAdministratorException;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Actions\DeleteUserTableAction;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\Pages\Concerns\EnforcesStaffLimit;
 use Misaf\VendraUser\Filament\Clusters\Resources\Users\UserResource;
 use Misaf\VendraUser\Models\User;
+use Misaf\VendraUser\Support\TenantAdministratorGuard;
 
 final class EditUser extends EditRecord
 {
     use EnforcesStaffLimit;
 
     protected static string $resource = UserResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     private bool $becomesStaff = false;
 
@@ -36,7 +43,7 @@ final class EditUser extends EditRecord
     {
         return [
             ViewAction::make(),
-            DeleteAction::make(),
+            DeleteUserTableAction::make(),
         ];
     }
 
@@ -46,8 +53,26 @@ final class EditUser extends EditRecord
     protected function beforeSave(): void
     {
         $record = $this->getRecord();
-
         $this->becomesStaff = $this->assignsRoles() && $record instanceof User && $record->roles()->doesntExist();
+
+        if ($record instanceof User && ($tenant = $record->tenant()->first()) !== null) {
+            $guard = resolve(TenantAdministratorGuard::class);
+            try {
+                $guard->execute($tenant, function () use ($guard, $record, $tenant): void {
+                    $record->refreshForUpdate();
+                    $this->becomesStaff = $this->assignsRoles() && $record->roles()->doesntExist();
+                    $selectedRoles = collect(Arr::wrap(Arr::get($this->data ?? [], 'roles')));
+
+                    if ($record->hasRole($guard->roleName()) && $selectedRoles->doesntContain($guard->role()->getKey())) {
+                        resolve(DemoteTenantAdministratorAction::class)->execute($tenant, $record);
+                    }
+                });
+            } catch (LastAdministratorException) {
+                Notification::make()->danger()->title(__('vendra-user::forms.last_administrator_required'))->send();
+
+                throw (new Halt)->rollBackDatabaseTransaction();
+            }
+        }
 
         if ($this->becomesStaff) {
             $this->assertRoomForStaff();

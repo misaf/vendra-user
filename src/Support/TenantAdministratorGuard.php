@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Misaf\VendraUser\Support;
 
-use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Config;
@@ -50,8 +49,7 @@ final readonly class TenantAdministratorGuard
         }
 
         $administratorCount = User::query()
-            ->whereHas('tenants', fn (Builder $query) => $query->whereKey($tenant->getKey()))
-            ->role($this->role())
+            ->administratorOf($tenant)
             ->lockForUpdate()
             ->count();
 

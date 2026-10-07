@@ -63,6 +63,12 @@ being removed, demoted, or disabled. `UpdateUserEmailAction` and
 `UpdateUserPasswordAction` provide normalized/validated credential changes,
 framework hashing, and remember-token rotation without exposing stored hashes.
 
+The Admin user resource uses `DeleteUserAction` for row, page, and bulk deletion,
+and the guarded demotion action before saving administrator role removals. A
+blocked edit rolls back all changes; bulk deletion keeps one enabled administrator
+and reports the refused deletion. Administrator counting includes role holders
+without a membership pivot.
+
 A store's staff are its users who hold a role. The package reports them as
 `PlanLimit::StaffPerStore` usage, and adding or promoting an administrator, or
 giving a user a role on the admin panel's user pages, is refused past the

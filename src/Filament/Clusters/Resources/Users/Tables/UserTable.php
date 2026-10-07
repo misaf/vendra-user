@@ -6,8 +6,6 @@ namespace Misaf\VendraUser\Filament\Clusters\Resources\Users\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
@@ -22,6 +20,8 @@ use Misaf\VendraSupport\Filament\Tables\Columns\CreatedAtColumn;
 use Misaf\VendraSupport\Filament\Tables\Columns\RowIndexColumn;
 use Misaf\VendraSupport\Filament\Tables\Columns\UpdatedAtColumn;
 use Misaf\VendraTagger\Filament\Tables\Columns\ModelTagsColumn;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Actions\DeleteUserBulkAction;
+use Misaf\VendraUser\Filament\Clusters\Resources\Users\Actions\DeleteUserTableAction;
 use Misaf\VendraUser\Filament\Tables\Columns\EmailColumn;
 use Misaf\VendraUser\Filament\Tables\Columns\EmailVerifiedAtColumn;
 use Misaf\VendraUser\Filament\Tables\Columns\UsernameColumn;
@@ -85,12 +85,12 @@ final class UserTable
 
                     EditAction::make(),
 
-                    DeleteAction::make(),
+                    DeleteUserTableAction::make(),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteUserBulkAction::make(),
                 ]),
             ])
             ->defaultSort(column: 'id', direction: 'desc');
